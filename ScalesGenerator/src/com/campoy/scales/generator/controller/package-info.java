@@ -1,0 +1,1 @@
+package com.campoy.scales.generator.controller;
