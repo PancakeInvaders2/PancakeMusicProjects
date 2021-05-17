@@ -28,6 +28,15 @@ public class ChordUtils {
                 (note) -> ChordUtils.augmentedTriad(note)));
         chordConstructingFunctions.add(new ChordConstructor("diminishedTriad", 
                 (note) -> ChordUtils.diminishedTriad(note)));
+        chordConstructingFunctions.add(new ChordConstructor("minorTriadMin7", 
+                (note) -> ChordUtils.minorTriadMin7(note)));
+        chordConstructingFunctions.add(new ChordConstructor("majorTriadMaj7", 
+                (note) -> ChordUtils.majorTriadMaj7(note)));
+        chordConstructingFunctions.add(new ChordConstructor("minorTriadMin7", 
+                (note) -> ChordUtils.minorTriadMin7(note)));
+        chordConstructingFunctions.add(new ChordConstructor("majorTriadMaj7", 
+                (note) -> ChordUtils.majorTriadMaj7(note)));
+        
         CHORD_CONSTRUCTORS = Collections.unmodifiableList(chordConstructingFunctions);
     }
     
@@ -63,7 +72,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord minorTriadMaj7(Note note){ //TODO
+    public static Chord minorTriadMaj7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(3));
@@ -72,7 +81,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord minorTriadMin7(Note note){ //TODO
+    public static Chord minorTriadMin7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(3));
@@ -89,7 +98,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord majorTriadmin7(Note note){ //TODO
+    public static Chord majorTriadMin7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(4));
@@ -98,7 +107,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord majorTriadmaj7(Note note){ //TODO
+    public static Chord majorTriadMaj7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(4));
