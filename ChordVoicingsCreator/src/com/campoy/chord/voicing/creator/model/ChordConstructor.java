@@ -19,6 +19,26 @@ public class ChordConstructor {
         return name;
     }
     
+    @Override
+    public boolean equals(Object other) {
+        
+        if( !( other instanceof ChordConstructor) ) {
+            return false;
+        }
+        
+        ChordConstructor otherChordConstructor = (ChordConstructor)other;
+        
+        Chord thisChord = this.constructChord(Note.A);
+        Chord otherChord = otherChordConstructor.constructChord(Note.A);
+        
+        if(thisChord == null) {
+        	return otherChord == null;
+        }
+        
+        return (thisChord.equals(otherChord));
+        
+    }
+    
     
     
 }

@@ -1,17 +1,24 @@
 package com.campoy.chord.voicing.creator.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+
+import com.campoy.chord.voicing.creator.util.ChordService;
+
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class ChordVoicing {
     
     private Map<GuitarString, FretAction> frettings = new HashMap<>();
     private Chord representedChord = null;
     private Tuning lastTuningUsed;
+    
+    int lowestFretPlaying = Integer.MAX_VALUE;
     
     public ChordVoicing() { }
     
@@ -22,6 +29,16 @@ public class ChordVoicing {
             frettings.put(new GuitarString(i), fretAction);
             i++;
         }
+    }
+    
+    public int numberOfNonMutedStrings() {
+    	int numberOfNonMutedStrings = 0;
+    	for(Entry<GuitarString, FretAction> frettingEntry : frettings.entrySet()) {
+    		if(!frettingEntry.getValue().isMute()) {
+        		numberOfNonMutedStrings++;
+    		}
+    	}
+    	return numberOfNonMutedStrings;
     }
 
     public Map<GuitarString, FretAction> getFrettings() {
@@ -96,6 +113,11 @@ public class ChordVoicing {
                 }
                 else {
                     stringNoteSounding = stringBaseNote.up(fretSounding);
+                    
+                    if(fretSounding < lowestFretPlaying) {
+                    	lowestFretPlaying = fretSounding;
+                    }
+                    
                 }
                 
                 representedChordBeingCreated.getNotes().add(stringNoteSounding.getNote());
@@ -104,9 +126,7 @@ public class ChordVoicing {
         }
         
         representedChord = representedChordBeingCreated;
-        
-        representedChord.postProcessing();
-        
+                
         this.lastTuningUsed = tuning;
     }
     
@@ -124,9 +144,26 @@ public class ChordVoicing {
         }
         return sj.toString();
     }
+    
+    public List<String> fullRepresentations(Tuning tuning) {
+    	List<String> result = new ArrayList<>();
 
-    public String fullRepresentation(Tuning tuning) {
-        return "| " + getRepresentedChord() +" | " + noteRepresentation(tuning) +" |" ;
+    	for( Entry<Note, List<Interval>> entry : getIntervalsFromRoots(tuning).entrySet() ) {
+    		
+    		Note root = entry.getKey();
+            List<Interval> intervals = entry.getValue();
+			if(intervals .size() > 1) {
+                StringJoiner sj = new StringJoiner(" ");
+                for(Interval interval : intervals) {
+                	sj.add(interval.getName(intervals));
+                }
+        		result.add( "| " + root + " " + sj.toString()  + " | " + noteRepresentation(tuning) +" |" );
+            }            
+
+    	}
+    	
+    	return result;
+    	
     }
 
     public String noteRepresentation(Tuning tuning) {
@@ -177,6 +214,72 @@ public class ChordVoicing {
         
         return smallestDistanceBetweenVoices;        
     }
+
+	public Map<Note, List<Interval>> getIntervalsFromRoots(Tuning tuning) {
+		
+		Map<Note, List<Interval>> intervalsList = new HashMap<>();
+		List<Note> notes = new ArrayList<>();
+		
+        for(Entry<GuitarString, FretAction> frettingEntry : frettings.entrySet()) {
+            
+            FretAction fretting = frettingEntry.getValue();
+            
+            Integer fretSounding = fretting.getFretSounding();
+            if(fretting.getFretSounding() != null) {
+                OctavatedNote tuningBaseNote = 
+                        tuning.getStringNotes().get(frettingEntry.getKey());
+                OctavatedNote octavatedNote = tuningBaseNote.up(fretSounding);
+                
+                if(! notes.contains(octavatedNote.getNote())) {
+                	notes.add(octavatedNote.getNote());
+                }
+            }
+        }		
+        
+        List<Note> previousNotes = new ArrayList<>();
+        for(Note rootNote : notes) {
+        	
+        	List<Interval> intervals = new ArrayList<>();
+        	
+        	for(Note currentNote : notes) {
+        		
+        		if( ! previousNotes.contains(currentNote) ) {
+        			intervals.add(intervalFromRoot(rootNote, currentNote) );
+        		}
+        	}
+        	
+        	for(Note prevNote : previousNotes) {
+    			intervals.add(intervalFromRoot(rootNote, prevNote) );
+        	}
+        	
+        	Collections.sort(intervals, (interval1, interval2) -> {
+        		
+        		return interval1.getOrderingPriority() - interval2.getOrderingPriority();
+        	});
+        	
+       		previousNotes.add(rootNote);
+        		
+			intervalsList.put(rootNote, intervals);
+        	
+        }
+        
+        return intervalsList;
+	}
+
+	private Interval intervalFromRoot(Note rootNote, Note currentNote) {
+		
+		int rootSemis = rootNote.getSemitonesFromA();
+		int currentSemis = currentNote.getSemitonesFromA();
+		if(currentSemis < rootSemis) {
+			currentSemis += 12; // octave up
+		}
+		
+		int distance = currentSemis - rootSemis;
+		return Interval.getIntervalBySemitones(distance);
+	}
     
+	public int getLowestFretPlaying() {
+		return lowestFretPlaying;
+	}
     
 }

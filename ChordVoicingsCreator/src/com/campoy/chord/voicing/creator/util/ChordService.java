@@ -2,62 +2,32 @@ package com.campoy.chord.voicing.creator.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.function.Predicate;
 
 import com.campoy.chord.voicing.creator.model.Chord;
 import com.campoy.chord.voicing.creator.model.ChordConstructor;
+import com.campoy.chord.voicing.creator.model.Interval;
 import com.campoy.chord.voicing.creator.model.Note;
 
-public class ChordUtils {
+public class ChordService {
     
-    public static final List<ChordConstructor> CHORD_CONSTRUCTORS;
     
-    static {
-        List<ChordConstructor> chordConstructingFunctions = new ArrayList<>();
-        chordConstructingFunctions.add(new ChordConstructor("powerChord", 
-                (note) -> ChordUtils.powerChord(note)));
-        chordConstructingFunctions.add(new ChordConstructor("minorTriad", 
-                (note) -> ChordUtils.minorTriad(note)));
-        chordConstructingFunctions.add(new ChordConstructor("majorTriad", 
-                (note) -> ChordUtils.majorTriad(note)));
-        chordConstructingFunctions.add(new ChordConstructor("sus2Triad", 
-                (note) -> ChordUtils.sus2Triad(note)));
-        chordConstructingFunctions.add(new ChordConstructor("sus4Triad", 
-                (note) -> ChordUtils.sus4Triad(note)));
-        chordConstructingFunctions.add(new ChordConstructor("augmentedTriad", 
-                (note) -> ChordUtils.augmentedTriad(note)));
-        chordConstructingFunctions.add(new ChordConstructor("diminishedTriad", 
-                (note) -> ChordUtils.diminishedTriad(note)));
-        
-        chordConstructingFunctions.add(new ChordConstructor("minorTriadMin7", 
-                (note) -> ChordUtils.minorTriadMin7(note)));
-        chordConstructingFunctions.add(new ChordConstructor("minorTriadMaj7", 
-                (note) -> ChordUtils.minorTriadMaj7(note)));
-        chordConstructingFunctions.add(new ChordConstructor("majorTriadMin7", 
-                (note) -> ChordUtils.majorTriadMin7(note)));
-        chordConstructingFunctions.add(new ChordConstructor("majorTriadMaj7", 
-                (note) -> ChordUtils.majorTriadMaj7(note)));
-        
-        chordConstructingFunctions.add(new ChordConstructor("minor no5th Min7", 
-                (note) -> ChordUtils.minorNo5thMin7(note)));
-        chordConstructingFunctions.add(new ChordConstructor("minor no5th Maj7", 
-                (note) -> ChordUtils.minorNo5thMaj7(note)));
-        chordConstructingFunctions.add(new ChordConstructor("major no5th Min7", 
-                (note) -> ChordUtils.majorNo5thMin7(note)));
-        chordConstructingFunctions.add(new ChordConstructor("major no5th Maj7", 
-                (note) -> ChordUtils.majorNo5thMaj7(note)));
-        
-        
-        CHORD_CONSTRUCTORS = Collections.unmodifiableList(chordConstructingFunctions);
-    }
     
-    public static List<ChordConstructor> getChordConstructors() {
-        return CHORD_CONSTRUCTORS;
-    }
     
-    public static String isChordAroundThisCenter(Note noteCenter, Chord chord) {
 
-        for(ChordConstructor chordConstructor : ChordUtils.CHORD_CONSTRUCTORS) {
+
+	public static String isChordAroundThisCenter(
+			Set<ChordConstructor> chordsToSearch, 
+			Note noteCenter, 
+			Chord chord) {
+
+        for(ChordConstructor chordConstructor : chordsToSearch) {
             
             Chord constructedChord = chordConstructor.constructChord(noteCenter);
             if(constructedChord.equals(chord)) {
@@ -67,15 +37,29 @@ public class ChordUtils {
         
         return null;
     }
+	
+    public static Chord customChord(Note note, List<Interval> intervals){
+        Chord chord = new Chord();
+        
+        List<Note> notesToAdd = new ArrayList<>();
+        
+        for(Interval interval : intervals) {
+        	notesToAdd.add(note.up(interval.getSemitones()));
+        }
+        
+        chord.getNotes().addAll(notesToAdd);
+        
+        return chord;
+    }
 
-    public static Chord powerChord(Note note){
+    public Chord powerChord(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(7));
         return chord;
     }
     
-    public static Chord minorTriad(Note note){
+    public Chord minorTriad(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(3));
@@ -83,7 +67,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord minorTriadMaj7(Note note){
+    public Chord minorTriadMaj7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(3));
@@ -92,7 +76,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord minorTriadMin7(Note note){
+    public Chord minorTriadMin7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(3));
@@ -101,7 +85,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord minorNo5thMaj7(Note note){
+    public Chord minorNo5thMaj7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(3));
@@ -109,7 +93,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord minorNo5thMin7(Note note){
+    public Chord minorNo5thMin7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(3));
@@ -117,7 +101,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord majorTriad(Note note){
+    public Chord majorTriad(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(4));
@@ -125,7 +109,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord majorTriadMin7(Note note){
+    public Chord majorTriadMin7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(4));
@@ -134,7 +118,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord majorTriadMaj7(Note note){
+    public Chord majorTriadMaj7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(4));
@@ -143,7 +127,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord majorNo5thMin7(Note note){
+    public Chord majorNo5thMin7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(4));
@@ -151,7 +135,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord majorNo5thMaj7(Note note){
+    public Chord majorNo5thMaj7(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(4));
@@ -159,7 +143,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord sus2Triad(Note note){
+    public Chord sus2Triad(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(2));
@@ -167,7 +151,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord sus4Triad(Note note){
+    public Chord sus4Triad(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(5));
@@ -175,7 +159,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord augmentedTriad(Note note){
+    public Chord augmentedTriad(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(4));
@@ -183,7 +167,7 @@ public class ChordUtils {
         return chord;
     }
     
-    public static Chord diminishedTriad(Note note){
+    public Chord diminishedTriad(Note note){
         Chord chord = new Chord();
         chord.getNotes().add(note);
         chord.getNotes().add(note.up(3));

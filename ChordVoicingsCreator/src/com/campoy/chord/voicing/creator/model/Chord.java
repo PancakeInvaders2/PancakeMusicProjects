@@ -1,18 +1,19 @@
 package com.campoy.chord.voicing.creator.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.Map.Entry;
 
-import com.campoy.chord.voicing.creator.util.ChordUtils;
+import com.campoy.chord.voicing.creator.util.ChordService;
 
 public class Chord {
 
     private static final String UNKNOWN_CHORD_TYPE = "Unknown chord type";
     private Set<Note> notes = new HashSet<>();
-    private String computedChordType = UNKNOWN_CHORD_TYPE;
-    private boolean chordTypeFound = false;
+    private List<String> computedChordTypes = new ArrayList<>();
     
     public Chord() {}
     
@@ -39,34 +40,21 @@ public class Chord {
     
     @Override
     public String toString() {
-        return getComputedChordType() + " (" + noteRepresentation() + ")";
+        return "" + getComputedChordTypes() + " (" + noteRepresentation() + ")";
     }
     
-    public void postProcessing(){
-        
-        String chordType = UNKNOWN_CHORD_TYPE;
-        chordTypeFound  = false;
-        
-        // we test each chord type with each note of the chord as the center
-        for(Note noteCenter : getNotes()) {
-            String result = ChordUtils.isChordAroundThisCenter(noteCenter, this);
-            if (result != null) {
-                chordType = result;
-                chordTypeFound = true;
-                break;
-            }
-        }
-        
-        this.chordTypeFound = chordTypeFound;
-        this.computedChordType = chordType;
+    public List<String> namedChords() {
+    	List<String> result = new ArrayList<>();
+    	for( String chordType : getComputedChordTypes()) {
+    		
+    		result.add( "" + chordType + " (" + noteRepresentation() + ")" );
+
+    	}
+        return result;
     }
     
-    public String getComputedChordType() {
-        return computedChordType;
-    }
-    
-    public boolean isChordTypeFound() {
-        return chordTypeFound;
+    public List<String> getComputedChordTypes() {
+        return computedChordTypes;
     }
     
     boolean isContainedIn(Chord other){

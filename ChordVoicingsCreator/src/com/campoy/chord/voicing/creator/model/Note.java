@@ -60,6 +60,11 @@ public enum Note {
     
 
     public Note up(int semitones) {
+    	
+    	if(semitones == 0) {
+    		return this;
+    	}
+    	
         int newNoteSemitonesFromA  = this.getSemitonesFromA() + semitones;
         while(newNoteSemitonesFromA > 11 ) {
             newNoteSemitonesFromA -= 12;
@@ -68,6 +73,10 @@ public enum Note {
     }    
     
     public Note down(int semitones) {
+    	if(semitones == 0) {
+    		return this;
+    	}
+    	
         int newNoteSemitonesFromA  = this.getSemitonesFromA() - semitones;
         while(newNoteSemitonesFromA < 0 ) {
             newNoteSemitonesFromA += 12;
