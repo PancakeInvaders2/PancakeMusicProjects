@@ -45,32 +45,16 @@ public class ChordVoicingGenerator {
         }));
 
         
-        Collection<ChordVoicing> allVoicings = chordVoicingGenerator.generateAllVoicings(
+       chordVoicingGenerator.generateAllVoicings(
         		tuning, 
         		fretSpan,
         		firstFretToScan,
-        		lastFretToScan, filters);
-        
-        
-        for(ChordVoicing voicing : allVoicings) {
+        		lastFretToScan, 
+        		filters);
                 
-            	for( String fullRepresentation : voicing.fullRepresentations(tuning)) {
-                    System.out.println(
-                            "_________ " 
-                            + fullRepresentation
-                            + ":");
-            	}
-                System.out.println(voicing.toString());
-                System.out.println("smallest distance: " + voicing.smallestDistanceBetweenVoices() + " ");
-                System.out.println("__________________________");
-                
-        }
-        
-        System.out.println("DONE");
-        
     }
 
-    private List<ChordVoicing> generateAllVoicings(
+    private void generateAllVoicings(
             Tuning tuning,
             int fretSpan,
             int firstFretToScan,
@@ -78,9 +62,6 @@ public class ChordVoicingGenerator {
             List<Predicate<ChordVoicing>> filters) {
         
         System.out.println("Generating voicings for the tuning " + tuning );
-
-        
-        Set<ChordVoicing> allVoicings = new HashSet<>();
         
         List<Pair<Integer, Integer>> startEnds = new ArrayList<>();
         
@@ -96,18 +77,24 @@ public class ChordVoicingGenerator {
         	
             Set<ChordVoicing> voicings = generateVoicings(
                     tuning , startEnd.getKey(), startEnd.getValue(), filters); 
-            
-            allVoicings.addAll(voicings);
-            System.out.println("Voicings between frets " + startEnd.getKey() + " and  " + startEnd.getValue() + " generated succesfully" );
+                        
+            for(ChordVoicing voicing : voicings) {
+                
+            	for( String fullRepresentation : voicing.fullRepresentations(tuning)) {
+                    System.out.println(
+                            "_________ " 
+                            + fullRepresentation
+                            + ":");
+            	}
+                System.out.println(voicing.toString());
+                System.out.println("smallest distance: " + voicing.smallestDistanceBetweenVoices() + " ");
+                System.out.println("__________________________");
+            }
+                    
         });
         
         System.out.println("All voicings generated succesfully" );
         
-        List<ChordVoicing> voicingsList = new ArrayList<>(allVoicings);
-    	Collections.sort(voicingsList, (voicing1, voicing2) -> {
-    		return voicing1.getLowestFretPlaying() - voicing2.getLowestFretPlaying();
-    	});
-        return voicingsList;
     }
     
     Set<ChordVoicing> generateVoicings(
