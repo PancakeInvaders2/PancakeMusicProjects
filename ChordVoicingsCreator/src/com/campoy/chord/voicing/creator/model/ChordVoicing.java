@@ -9,6 +9,8 @@ import java.util.StringJoiner;
 
 import com.campoy.chord.voicing.creator.util.ChordService;
 
+import javafx.util.Pair;
+
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -17,6 +19,8 @@ public class ChordVoicing {
     private Map<GuitarString, FretAction> frettings = new HashMap<>();
     private Chord representedChord = null;
     private Tuning lastTuningUsed;
+    
+    List<Pair<Scale, Note>> compatibleScalesAndRoots = new ArrayList<>();
     
     int lowestFretPlaying = Integer.MAX_VALUE;
     
@@ -93,7 +97,7 @@ public class ChordVoicing {
         return result;
     }
     
-    public void postProcessing(Tuning tuning){
+    public void postProcessing(Tuning tuning, Map<Scale, Map<Note, List<Note>>> scales){
         
         Chord representedChordBeingCreated = new Chord();
         
@@ -128,6 +132,9 @@ public class ChordVoicing {
         representedChord = representedChordBeingCreated;
                 
         this.lastTuningUsed = tuning;
+        
+        computeCompatibleWithAnyOfTheseScales(scales);
+        
     }
     
     public Chord getRepresentedChord() {
@@ -281,5 +288,58 @@ public class ChordVoicing {
 	public int getLowestFretPlaying() {
 		return lowestFretPlaying;
 	}
+
+    public void computeCompatibleWithAnyOfTheseScales(
+            Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {
+        
+        Chord voicingChord = getRepresentedChord();
+
+        for(Entry<Scale, Map<Note, List<Note>>> 
+            scaleMapOfRootsToNotesOfScaleEntry : scaleToMapOfRootsToNotesOfScale.entrySet()) {
+            
+            Scale scale = scaleMapOfRootsToNotesOfScaleEntry.getKey();
+            Map<Note, List<Note>> mapOfRootsToNotesOfScale = scaleMapOfRootsToNotesOfScaleEntry.getValue();
+            
+            for(Entry<Note, List<Note>> rootToNotesOfScaleEntry 
+                    : mapOfRootsToNotesOfScale.entrySet()) {
+                
+                boolean voicingMatches = true;
+                
+                Note root = rootToNotesOfScaleEntry.getKey();
+                List<Note> notesOfScale = rootToNotesOfScaleEntry.getValue();
+                
+                for( Note voicingNote : voicingChord.getNotes()) {
+                    
+                    voicingMatches &= notesOfScale.contains(voicingNote);
+                }
+                
+                if(voicingMatches == true) {
+                    
+                    compatibleScalesAndRoots.add(new Pair<>(scale, root));
+                }
+            }
+        }
+    }
+    
+    public boolean isCompatibleWithAnyOfTheseScales(
+            Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {            
+        
+        boolean result = false;
+        
+        for( Pair<Scale, Note> compatibleScaleAndRoot : compatibleScalesAndRoots) {
+            Scale scale = compatibleScaleAndRoot.getKey();
+            
+            if(scaleToMapOfRootsToNotesOfScale.containsKey(scale)) {
+                result = true;
+                break;
+            };
+        }
+        
+        return result;
+    }
+    
+    public List<Pair<Scale, Note>> getCompatibleScalesAndRoots() {
+        return compatibleScalesAndRoots;
+    }
     
 }

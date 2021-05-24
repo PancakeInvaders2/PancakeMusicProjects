@@ -6,18 +6,18 @@ import java.util.Map;
 
 public enum Interval {
 	
-	ROOT( 0, "", false, false, 0),
-	MIN3( 3, "minor", true, false, 1),
-	MAJ3( 4, "major", true, false, 2),
-	FLAT_5( 6, "b5", false, false, 3),
-	PERF_FIFTH( 7, "5", false, true, 4),
-	MIN7TH( 10, "b7", false, false, 5),
-	MAJ7TH( 11, "add7", false, false, 6),
-	MIN2( 1, "b9", false, false, 7),
-	MAJ2( 2, "add9", false, false, 8),
-	PERF_FOURTH( 5, "add11", false, false, 9),
-	MIN6TH( 8, "b13", false, false, 10),
-	MAJ6TH( 9, "add13", false, false, 11);
+	ROOT( 0, "", false, false, 0, "0"),
+	MIN3( 3, "minor", true, false, 1, "3"),
+	MAJ3( 4, "major", true, false, 2, "4"),
+	FLAT_5( 6, "b5", false, false, 3, "6"),
+	PERF_FIFTH( 7, "5", false, true, 4, "7"),
+	MIN7TH( 10, "b7", false, false, 5, "t"),
+	MAJ7TH( 11, "add7", false, false, 6, "e"),
+	MIN2( 1, "b9", false, false, 7, "H"),
+	MAJ2( 2, "add9", false, false, 8, "W"),
+	PERF_FOURTH( 5, "add11", false, false, 9, "5"),
+	MIN6TH( 8, "b13", false, false, 10, "8"),
+	MAJ6TH( 9, "add13", false, false, 11, "9");
 	
 	private static Map<Integer, Interval> semitonesToInterval = new HashMap<>();
 	
@@ -33,6 +33,7 @@ public enum Interval {
 	
 	private int semitones;
 	private String name;
+	private String scaleRepresentation;
 	
 	boolean isThird;
 	boolean isFifth;
@@ -42,12 +43,14 @@ public enum Interval {
 			String name, 
 			boolean isThird, 
 			boolean isFifth, 
-			int orderingPriority) {
+			int orderingPriority,
+			String scaleRepresentation) {
 		this.semitones = semitones;
 		this.name = name;
 		this.isThird = isThird;
 		this.isFifth = isFifth;
 		this.orderingPriority = orderingPriority;
+		this.scaleRepresentation = scaleRepresentation;
 	}
 	
 	public String getName(List<Interval> intervals) {
@@ -85,5 +88,9 @@ public enum Interval {
 	public int getOrderingPriority() {
 		return orderingPriority;
 	}
+	
+	public String getScaleRepresentation() {
+	    return scaleRepresentation;
+    }
 	
 }
