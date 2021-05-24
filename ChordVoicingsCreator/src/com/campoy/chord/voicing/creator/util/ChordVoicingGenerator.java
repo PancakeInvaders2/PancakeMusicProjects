@@ -51,9 +51,10 @@ public class ChordVoicingGenerator {
         // filter out voicings where the 7th and the root are right next to each other
         int minimumSemitonesBetweenNotesOfTheVoicing  = 2; 
         List<Scale> searchedScales = Arrays.asList(
-                Scale.AEOLIAN,
-                Scale.HARMONIC_MINOR,
-                Scale.PHRYGIAN_DOMINANT);
+                Scale.AEOLIAN
+//                , Scale.HARMONIC_MINOR
+//                , Scale.PHRYGIAN_DOMINANT
+                );
         List<Note> allowedRoots = Arrays.asList(
                 Note.D);
         int maxDifferentNotesAllowed = 4;
@@ -72,7 +73,9 @@ public class ChordVoicingGenerator {
             return voicing.getRepresentedChord().getNotes().size() >= maxDifferentNotesAllowed;
         });
        
-        Path filePath = Paths.get("C:/Users/Mickael/eclipse-workspace/PancakeMusicProjects/Voices.txt");
+//        Path filePath = Paths.get("C:/Users/Mickael/eclipse-workspace/PancakeMusicProjects/Voices.txt");
+        Path filePath = Paths.get("./Voices.txt");
+        System.out.println("Printing to " + filePath.toAbsolutePath());
         File targetFile = filePath.toFile();
         FileOutputStream o = new FileOutputStream(targetFile);
         BufferedOutputStream bos = new BufferedOutputStream(o);

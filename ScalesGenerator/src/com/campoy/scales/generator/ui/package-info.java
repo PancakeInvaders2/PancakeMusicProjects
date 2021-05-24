@@ -1,1 +1,0 @@
-package com.campoy.scales.generator.ui;
