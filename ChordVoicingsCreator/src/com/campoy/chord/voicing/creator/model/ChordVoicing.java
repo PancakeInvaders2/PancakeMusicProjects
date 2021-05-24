@@ -1,6 +1,7 @@
 package com.campoy.chord.voicing.creator.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -152,10 +153,32 @@ public class ChordVoicing {
         return sj.toString();
     }
     
+    private Integer getFirstOccurence(List<OctavatedNote> orderedNotes, Note note){
+        int i = 0;
+        for(OctavatedNote orderedNote : orderedNotes) {
+            if(orderedNote.getNote().equals(note)) {
+                return i;
+            }
+            i++;
+        }
+        
+        return null;
+    }
+    
     public List<String> fullRepresentations(Tuning tuning) {
     	List<String> result = new ArrayList<>();
 
-    	for( Entry<Note, List<Interval>> entry : getIntervalsFromRoots(tuning).entrySet() ) {
+        List<OctavatedNote> orderedNotes = orderNotes(tuning);
+        
+        List<Entry<Note, List<Interval>>> listOfEntries = new ArrayList<>(
+                getIntervalsFromRoots(tuning).entrySet());
+        
+        Collections.sort(listOfEntries, (entry1, entry2) -> {
+            return getFirstOccurence(orderedNotes, entry1.getKey())
+                    - getFirstOccurence(orderedNotes, entry2.getKey());
+        });
+               
+    	for( Entry<Note, List<Interval>> entry : listOfEntries) {
     		
     		Note root = entry.getKey();
             List<Interval> intervals = entry.getValue();
@@ -164,13 +187,32 @@ public class ChordVoicing {
                 for(Interval interval : intervals) {
                 	sj.add(interval.getName(intervals));
                 }
-        		result.add( "| " + root + " " + sj.toString()  + " | " + noteRepresentation(tuning) +" |" );
+        		result.add( root + " " + sj.toString() );
             }            
 
     	}
     	
     	return result;
     	
+    }
+
+    private List<OctavatedNote> orderNotes(Tuning tuning) {
+        List<OctavatedNote> orderedNotes = new ArrayList<>();
+        for(Entry<GuitarString, FretAction> frettingEntry : frettings.entrySet()) {
+            
+            FretAction fretting = frettingEntry.getValue();
+            
+            Integer fretSounding = fretting.getFretSounding();
+            if(fretting.getFretSounding() != null) {
+                OctavatedNote tuningBaseNote = 
+                        tuning.getStringNotes().get(frettingEntry.getKey());
+                orderedNotes.add(tuningBaseNote.up(fretSounding));
+            }
+        }
+        Collections.sort(orderedNotes, (note1, note2) -> {
+            return note1.getSemitonesFromA0() - note2.getSemitonesFromA0();
+        });
+        return orderedNotes;
     }
 
     public String noteRepresentation(Tuning tuning) {

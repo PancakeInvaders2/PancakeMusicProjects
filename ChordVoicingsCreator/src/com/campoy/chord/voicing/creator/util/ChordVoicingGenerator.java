@@ -43,24 +43,28 @@ public class ChordVoicingGenerator {
     public static void main(String[] args) throws FileNotFoundException {
     	        
         ChordVoicingGenerator chordVoicingGenerator = new ChordVoicingGenerator();
-        Tuning tuning = Tuning.DROP_D_6_STRING_GUITAR;
+        Tuning tuning = Tuning.DROP_A_7_STRING_GUITAR;
         int fretSpan = 4; // number of frets that one can span with their fingers
-        int firstFretToScan = 1;
-        int lastFretToScan = 24; // total number of frets
+        int firstFretToScan = 5;
+        int lastFretToScan = 20; // total number of frets
         // minimum number of semitones between notes of the voicing, used by example to
-        // filter out voicings where the 7th and the root are right next to each other
+        // filter out voicings where the maj7th/min2nd and the root are right next to each other
         int minimumSemitonesBetweenNotesOfTheVoicing  = 2; 
         List<Scale> searchedScales = Arrays.asList(
-                Scale.AEOLIAN
+//                Scale.AEOLIAN
 //                , Scale.HARMONIC_MINOR
-//                , Scale.PHRYGIAN_DOMINANT
+                Scale.PHRYGIAN_DOMINANT
                 );
-        List<Note> allowedRoots = Arrays.asList(
-                Note.D);
-        int maxDifferentNotesAllowed = 4;
+        List<Note> allowedScaleRoots = Arrays.asList(
+                Note.A);
+        int minNumberOfDifferentNotes = 2;
+        int maxNumberOfDifferentNotes = 3;
+        boolean mustContainSomeOpenStrings = true;
+        int minimumNumberOfMutedLowestStrings = 0;
+        int minimumNumberOfMutedHighestStrings = 3;
         
         Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale = 
-                computeMapOfScaleToMapOfRootsToNotesOfScale(searchedScales, allowedRoots);
+                computeMapOfScaleToMapOfRootsToNotesOfScale(searchedScales, allowedScaleRoots);
                     
         List<Predicate<ChordVoicing>> filters = new ArrayList<>();
         filters.add(voicing -> {
@@ -70,7 +74,40 @@ public class ChordVoicingGenerator {
             return voicing.isCompatibleWithAnyOfTheseScales(scaleToMapOfRootsToNotesOfScale);
         });
         filters.add(voicing -> {
-            return voicing.getRepresentedChord().getNotes().size() >= maxDifferentNotesAllowed;
+            return voicing.getRepresentedChord().getNotes().size() <= maxNumberOfDifferentNotes;
+        });
+        filters.add(voicing -> {
+            return voicing.getRepresentedChord().getNotes().size() >= minNumberOfDifferentNotes;
+        });
+        filters.add(voicing -> {
+            if(mustContainSomeOpenStrings) {
+                return voicing.getFrettings().containsValue(FretAction.OPEN);
+            }
+            return true;
+        });
+        filters.add(voicing -> {
+            
+            boolean passed = true;
+            for( int stringNumber = 0; 
+                    stringNumber < numberOfMutedLowestStrings ;
+                    stringNumber++) {
+                
+                passed &= FretAction.MUTE.equals(voicing.getFrettings().get(new GuitarString(stringNumber)));
+            }
+            return passed;
+            
+        });
+        filters.add(voicing -> {
+            
+            boolean passed = true;
+            for( int stringNumber = tuning.getNumberOfStrings() - 1; 
+                    stringNumber + numberOfMutedHighestStrings >= tuning.getNumberOfStrings() ;
+                    stringNumber--) {
+                
+                passed &= FretAction.MUTE.equals(voicing.getFrettings().get(new GuitarString(stringNumber)));
+            }
+            return passed;
+            
         });
        
 //        Path filePath = Paths.get("C:/Users/Mickael/eclipse-workspace/PancakeMusicProjects/Voices.txt");
@@ -159,6 +196,8 @@ public class ChordVoicingGenerator {
                     + " generated succesfully");
             
             for(ChordVoicing voicing : voicings) {
+                
+                output.println("____________ " + voicing.noteRepresentation(tuning));
                 
             	for( String fullRepresentation : voicing.fullRepresentations(tuning)) {
             	    output.println(

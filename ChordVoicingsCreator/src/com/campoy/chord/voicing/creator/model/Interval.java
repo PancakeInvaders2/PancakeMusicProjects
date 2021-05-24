@@ -63,7 +63,7 @@ public enum Interval {
 			}
 			else if( isThird 
 				&& ! intervals.contains(PERF_FIFTH) ) {
-				return name + " no5th";
+				return name + "(no5th)";
 			}
 			else if( isFifth 
 					&& (intervals.contains(MIN3)
