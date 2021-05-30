@@ -44,24 +44,24 @@ public class ChordVoicingGenerator {
     	        
         ChordVoicingGenerator chordVoicingGenerator = new ChordVoicingGenerator();
         Tuning tuning = Tuning.DROP_A_7_STRING_GUITAR;
-        int fretSpan = 4; // number of frets that one can span with their fingers
+        int fretSpan = 3; // number of frets that one can comfortably span with their fingers
         int firstFretToScan = 5;
-        int lastFretToScan = 20; // total number of frets
+        int lastFretToScan = 15; // total number of frets
         // minimum number of semitones between notes of the voicing, used by example to
         // filter out voicings where the maj7th/min2nd and the root are right next to each other
         int minimumSemitonesBetweenNotesOfTheVoicing  = 2; 
         List<Scale> searchedScales = Arrays.asList(
-//                Scale.AEOLIAN
-//                , Scale.HARMONIC_MINOR
+                Scale.AEOLIAN,
                 Scale.PHRYGIAN_DOMINANT
                 );
         List<Note> allowedScaleRoots = Arrays.asList(
-                Note.A);
+                Note.E);
         int minNumberOfDifferentNotes = 2;
-        int maxNumberOfDifferentNotes = 3;
-        boolean mustContainSomeOpenStrings = true;
+        int maxNumberOfDifferentNotes = 4;
+        int mustContainAtLeastThisManyOpenStrings = 2;
         int minimumNumberOfMutedLowestStrings = 0;
-        int minimumNumberOfMutedHighestStrings = 3;
+        int minimumNumberOfMutedHighestStrings = 0;
+        boolean forbidTheSameNoteOnTheSameOctave = true; 
         
         Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale = 
                 computeMapOfScaleToMapOfRootsToNotesOfScale(searchedScales, allowedScaleRoots);
@@ -80,16 +80,25 @@ public class ChordVoicingGenerator {
             return voicing.getRepresentedChord().getNotes().size() >= minNumberOfDifferentNotes;
         });
         filters.add(voicing -> {
-            if(mustContainSomeOpenStrings) {
-                return voicing.getFrettings().containsValue(FretAction.OPEN);
-            }
-            return true;
+        	
+        	return forbidTheSameNoteOnTheSameOctave 
+        			&& !voicing.getHasSeveralTimesTheSameNoteOnTheSameOctave();
+
+        });
+        filters.add(voicing -> {
+        	int numberOfOpenStrings = 0;
+        	for(Entry<GuitarString, FretAction> entry : voicing.getFrettings().entrySet()) {
+        		if(entry.getValue().isOpen()) {
+                	numberOfOpenStrings++;
+                }
+        	}
+            return (numberOfOpenStrings >= mustContainAtLeastThisManyOpenStrings);
         });
         filters.add(voicing -> {
             
             boolean passed = true;
             for( int stringNumber = 0; 
-                    stringNumber < numberOfMutedLowestStrings ;
+                    stringNumber < minimumNumberOfMutedLowestStrings ;
                     stringNumber++) {
                 
                 passed &= FretAction.MUTE.equals(voicing.getFrettings().get(new GuitarString(stringNumber)));
@@ -101,7 +110,7 @@ public class ChordVoicingGenerator {
             
             boolean passed = true;
             for( int stringNumber = tuning.getNumberOfStrings() - 1; 
-                    stringNumber + numberOfMutedHighestStrings >= tuning.getNumberOfStrings() ;
+                    stringNumber + minimumNumberOfMutedHighestStrings >= tuning.getNumberOfStrings() ;
                     stringNumber--) {
                 
                 passed &= FretAction.MUTE.equals(voicing.getFrettings().get(new GuitarString(stringNumber)));
@@ -206,6 +215,7 @@ public class ChordVoicingGenerator {
                             + ":");
             	}
             	output.println(voicing.toString());
+            	output.println(voicing.notesOnStrings());
             	StringJoiner sj = new StringJoiner(", ");
             	for(Pair<Scale, Note> compatibleScaleAndRoot : voicing.getCompatibleScalesAndRoots()) {
             	    sj.add(compatibleScaleAndRoot.getValue() 

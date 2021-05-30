@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -20,6 +21,7 @@ public class ChordVoicing {
     private Map<GuitarString, FretAction> frettings = new HashMap<>();
     private Chord representedChord = null;
     private Tuning lastTuningUsed;
+    private boolean hasSeveralTimesTheSameNoteOnTheSameOctave = false;
     
     List<Pair<Scale, Note>> compatibleScalesAndRoots = new ArrayList<>();
     
@@ -102,6 +104,9 @@ public class ChordVoicing {
         
         Chord representedChordBeingCreated = new Chord();
         
+        Set<OctavatedNote> notesPlaying = new HashSet<>();
+        boolean duplicateOctavatedNotesPlaying = false;
+        
         for( Entry<GuitarString, FretAction> frettingEntry : getFrettings().entrySet() ) {
             
             GuitarString guitarString = frettingEntry.getKey();
@@ -125,10 +130,18 @@ public class ChordVoicing {
                     
                 }
                 
+                if(notesPlaying.contains(stringNoteSounding)) {
+                	duplicateOctavatedNotesPlaying = true;
+                }
+                
+                notesPlaying.add(stringNoteSounding);
+                
                 representedChordBeingCreated.getNotes().add(stringNoteSounding.getNote());
             }
             
         }
+        
+        this.hasSeveralTimesTheSameNoteOnTheSameOctave = duplicateOctavatedNotesPlaying;
         
         representedChord = representedChordBeingCreated;
                 
@@ -149,6 +162,24 @@ public class ChordVoicing {
         for(int i = 0; i < frettings.size(); i++) {
             FretAction fretAction = frettings.get(new GuitarString(i));
             sj.add(fretAction.toString());
+        }
+        return sj.toString();
+    }
+    
+    public String notesOnStrings() {
+        
+        StringJoiner sj = new StringJoiner(" "); 
+        for(int i = 0; i < frettings.size(); i++) {
+            FretAction fretAction = frettings.get(new GuitarString(i));
+            Integer fretSounding = fretAction.getFretSounding();
+            if(fretSounding == null) {
+                sj.add(fretAction.toString());
+            }
+            else {
+            	OctavatedNote tuningNote = lastTuningUsed.getStringNotes().get(new GuitarString(i));
+            	OctavatedNote noteSounding = tuningNote.up(fretSounding);
+                sj.add(noteSounding.toString());
+            }
         }
         return sj.toString();
     }
@@ -303,7 +334,7 @@ public class ChordVoicing {
         	
         	Collections.sort(intervals, (interval1, interval2) -> {
         		
-        		return interval1.getOrderingPriority() - interval2.getOrderingPriority();
+        		return interval1.getOrderingPriority(intervals) - interval2.getOrderingPriority(intervals);
         	});
         	
        		previousNotes.add(rootNote);
@@ -382,6 +413,10 @@ public class ChordVoicing {
     
     public List<Pair<Scale, Note>> getCompatibleScalesAndRoots() {
         return compatibleScalesAndRoots;
+    }
+    
+    public boolean getHasSeveralTimesTheSameNoteOnTheSameOctave(){
+    	return hasSeveralTimesTheSameNoteOnTheSameOctave;
     }
     
 }
