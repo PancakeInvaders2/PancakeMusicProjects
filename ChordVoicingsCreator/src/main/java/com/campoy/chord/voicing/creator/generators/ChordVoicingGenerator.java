@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 import com.campoy.chord.voicing.creator.model.guitar.ChordVoicing;
 import com.campoy.chord.voicing.creator.model.guitar.FretAction;
 import com.campoy.chord.voicing.creator.model.guitar.GuitarString;
+import com.campoy.chord.voicing.creator.model.guitar.ScaleAndRoot;
 import com.campoy.chord.voicing.creator.model.guitar.Tuning;
 import com.campoy.chord.voicing.creator.model.musictheory.ChordConstructor;
 import com.campoy.chord.voicing.creator.model.musictheory.Interval;
@@ -36,7 +37,7 @@ import com.campoy.chord.voicing.creator.model.musictheory.Note;
 import com.campoy.chord.voicing.creator.model.musictheory.OctavatedNote;
 import com.campoy.chord.voicing.creator.model.musictheory.Scale;
 
-import javafx.util.Pair;
+import lombok.Data;
 
 public class ChordVoicingGenerator {
 
@@ -220,25 +221,25 @@ public class ChordVoicingGenerator {
         
         System.out.println("Generating voicings for the tuning " + tuning );
         
-        List<Pair<Integer, Integer>> startEnds = new ArrayList<>();
+        List<StartAndEnd> startEnds = new ArrayList<>();
         
         int fretStart = firstFretToScan;
         int fretEnd;
         while( (fretEnd = fretStart + fretSpan - 1) <= lastFretToScan ) {
         	
-        	startEnds.add(new Pair<Integer, Integer>(fretStart, fretEnd));
+        	startEnds.add(new StartAndEnd(fretStart, fretEnd));
             fretStart++;
         }
         
         startEnds.stream().forEach((startEnd) -> {
         	
             Set<ChordVoicing> voicings = generateVoicings(
-                    tuning , startEnd.getKey(), startEnd.getValue(), filters, scaleToMapOfRootsToNotesOfScale); 
+                    tuning , startEnd.getStart(), startEnd.getEnd(), filters, scaleToMapOfRootsToNotesOfScale); 
             
             System.out.println(
                     "Voicings between frets " 
-                    + startEnd.getKey() 
-                    + " and " + startEnd.getValue() 
+                    + startEnd.getStart() 
+                    + " and " + startEnd.getEnd() 
                     + " generated succesfully");
             
             for(ChordVoicing voicing : voicings) {
@@ -254,10 +255,10 @@ public class ChordVoicingGenerator {
             	output.println(voicing.toString());
             	output.println(voicing.notesOnStrings());
             	StringJoiner sj = new StringJoiner(", ");
-            	for(Pair<Scale, Note> compatibleScaleAndRoot : voicing.getCompatibleScalesAndRoots()) {
-            	    sj.add(compatibleScaleAndRoot.getValue() 
+            	for(ScaleAndRoot compatibleScaleAndRoot : voicing.getCompatibleScalesAndRoots()) {
+            	    sj.add(compatibleScaleAndRoot.getScale() 
             	            + " " 
-            	            + compatibleScaleAndRoot.getKey());
+            	            + compatibleScaleAndRoot.getRoot());
             	}
                 output.println("Diatonic to " + sj.toString());
 
@@ -374,6 +375,12 @@ public class ChordVoicingGenerator {
         }
         
         return voicingsConstructed;
+    }
+    
+    @Data
+    private class StartAndEnd {
+        private final Integer start;
+        private final Integer end;
     }
     
 }

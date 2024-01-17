@@ -16,8 +16,6 @@ import com.campoy.chord.voicing.creator.model.musictheory.OctavatedNote;
 import com.campoy.chord.voicing.creator.model.musictheory.Scale;
 import com.campoy.chord.voicing.creator.util.ChordService;
 
-import javafx.util.Pair;
-
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -28,7 +26,7 @@ public class ChordVoicing {
     private Tuning lastTuningUsed;
     private boolean hasSeveralTimesTheSameNoteOnTheSameOctave = false;
     
-    List<Pair<Scale, Note>> compatibleScalesAndRoots = new ArrayList<>();
+    List<ScaleAndRoot> compatibleScalesAndRoots = new ArrayList<>();
     
     int lowestFretPlaying = Integer.MAX_VALUE;
     
@@ -393,7 +391,7 @@ public class ChordVoicing {
                 
                 if(voicingMatches == true) {
                     
-                    compatibleScalesAndRoots.add(new Pair<>(scale, root));
+                    compatibleScalesAndRoots.add(new ScaleAndRoot(scale, root));
                 }
             }
         }
@@ -404,8 +402,8 @@ public class ChordVoicing {
         
         boolean result = false;
         
-        for( Pair<Scale, Note> compatibleScaleAndRoot : compatibleScalesAndRoots) {
-            Scale scale = compatibleScaleAndRoot.getKey();
+        for( ScaleAndRoot compatibleScaleAndRoot : compatibleScalesAndRoots) {
+            Scale scale = compatibleScaleAndRoot.getScale();
             
             if(scaleToMapOfRootsToNotesOfScale.containsKey(scale)) {
                 result = true;
@@ -416,7 +414,7 @@ public class ChordVoicing {
         return result;
     }
     
-    public List<Pair<Scale, Note>> getCompatibleScalesAndRoots() {
+    public List<ScaleAndRoot> getCompatibleScalesAndRoots() {
         return compatibleScalesAndRoots;
     }
     
