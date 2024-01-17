@@ -48,7 +48,7 @@ public class TinWhistleKeyGenerator {
         scalesToSearch.add(melodicMinorModes.get(2).setName("Lydian augmented"));
         scalesToSearch.add(melodicMinorModes.get(3).setName("Lydian dominant"));
         scalesToSearch.add(melodicMinorModes.get(4).setName("Mixolydian b6"));
-        scalesToSearch.add(melodicMinorModes.get(5).setName("Locrian #2"));
+        scalesToSearch.add(melodicMinorModes.get(5).setName("Locrian nat2/Aeolian b5"));
         scalesToSearch.add(melodicMinorModes.get(6).setName("Altered scale (SuperLocrian)"));
         
         scalesToSearch.add(Scale.GENERAL_MINOR.setName("General minor"));
@@ -78,7 +78,7 @@ public class TinWhistleKeyGenerator {
                         
                         List<NoteAndFingering> neededCrossFingerings = whistle.getNeededCrossFingerings(scaleNotes);
                         if(!neededCrossFingerings.isEmpty()) {
-                            sb.append(" using cross the ");
+                            sb.append(" using the cross ");
                             
                             if(neededCrossFingerings.size() == 1) {
                                 sb.append("fingering ");
@@ -99,6 +99,7 @@ public class TinWhistleKeyGenerator {
                             }
                             
                         }
+                        sb.append("  ");
                         System.out.println(sb.toString());
 
                     }                    

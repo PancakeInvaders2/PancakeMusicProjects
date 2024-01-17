@@ -6,7 +6,7 @@ import java.util.Map;
 public enum Note {
 
     A(0, "A", null),
-    A_SHARP(1, "A#", "Gb"),
+    A_SHARP(1, "A#", "Bb"),
     B(2, "B", null),
     C(3, "C", null),
     C_SHARP(4, "C#", "Db"),
