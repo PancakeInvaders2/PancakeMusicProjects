@@ -1,4 +1,4 @@
-package com.campoy.chord.voicing.creator.model;
+package com.campoy.chord.voicing.creator.model.guitar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import com.campoy.chord.voicing.creator.model.musictheory.Chord;
+import com.campoy.chord.voicing.creator.model.musictheory.Interval;
+import com.campoy.chord.voicing.creator.model.musictheory.Note;
+import com.campoy.chord.voicing.creator.model.musictheory.OctavatedNote;
+import com.campoy.chord.voicing.creator.model.musictheory.Scale;
 import com.campoy.chord.voicing.creator.util.ChordService;
 
 import javafx.util.Pair;
@@ -417,6 +422,44 @@ public class ChordVoicing {
     
     public boolean getHasSeveralTimesTheSameNoteOnTheSameOctave(){
     	return hasSeveralTimesTheSameNoteOnTheSameOctave;
+    }
+    
+    public OctavatedNote getHighestNote(Tuning tuning){
+        OctavatedNote highestNote = null;
+        for(Entry<GuitarString, FretAction> frettingEntry : frettings.entrySet()) {
+            FretAction fretting = frettingEntry.getValue();
+            Integer fretSounding = fretting.getFretSounding();
+            if(fretting.getFretSounding() != null) {
+                OctavatedNote tuningBaseNote = 
+                        tuning.getStringNotes().get(frettingEntry.getKey());
+                 OctavatedNote note = tuningBaseNote.up(fretSounding);
+                 
+                 if( highestNote == null
+                         || note.isHigherThan(highestNote) ) {
+                     highestNote = note;
+                 }
+            }
+        }
+        return highestNote;
+    }
+    
+    public OctavatedNote getLowestNote(Tuning tuning){
+        OctavatedNote lowestNote = null;
+        for(Entry<GuitarString, FretAction> frettingEntry : frettings.entrySet()) {
+            FretAction fretting = frettingEntry.getValue();
+            Integer fretSounding = fretting.getFretSounding();
+            if(fretting.getFretSounding() != null) {
+                OctavatedNote tuningBaseNote = 
+                        tuning.getStringNotes().get(frettingEntry.getKey());
+                 OctavatedNote note = tuningBaseNote.up(fretSounding);
+                 
+                 if( lowestNote == null
+                         || note.isLowerThan(lowestNote) ) {
+                     lowestNote = note;
+                 }
+            }
+        }
+        return lowestNote;
     }
     
 }

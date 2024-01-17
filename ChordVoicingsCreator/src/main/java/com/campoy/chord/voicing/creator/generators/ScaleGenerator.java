@@ -1,16 +1,22 @@
-package com.campoy.chord.voicing.creator.util;
+package com.campoy.chord.voicing.creator.generators;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.campoy.chord.voicing.creator.model.Interval;
-import com.campoy.chord.voicing.creator.model.Scale;
+import com.campoy.chord.voicing.creator.model.musictheory.Interval;
+import com.campoy.chord.voicing.creator.model.musictheory.Scale;
 
 
 
 public class ScaleGenerator
 {
+    
+    /**
+     * 
+     * Generates lists of theoretically valid scales
+     * 
+     */
  
     public static void main(String[] args) {
         

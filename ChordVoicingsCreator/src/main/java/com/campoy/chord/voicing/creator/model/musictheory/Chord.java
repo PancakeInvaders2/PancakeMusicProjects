@@ -1,4 +1,4 @@
-package com.campoy.chord.voicing.creator.model;
+package com.campoy.chord.voicing.creator.model.musictheory;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package com.campoy.chord.voicing.creator.model;
+package com.campoy.chord.voicing.creator.model.musictheory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,18 +28,47 @@ public class Scale {
     public static final Scale MINOR = AEOLIAN;
     
     public static final Scale HARMONIC_MINOR = new Scale(
-            Interval.MAJ2,
-            Interval.MIN2,
-            Interval.MAJ2,
-            Interval.MAJ2,
-            Interval.MIN2,
-            Interval.MIN3,
-            Interval.MIN2)
-            .setName("Harmonic minor");
+        Interval.MAJ2,
+        Interval.MIN2,
+        Interval.MAJ2,
+        Interval.MAJ2,
+        Interval.MIN2,
+        Interval.MIN3,
+        Interval.MIN2)
+        .setName("Harmonic minor");
     
     public static final Scale PHRYGIAN_DOMINANT = 
             HARMONIC_MINOR.modes().get(4).setName("Phrygian dominant");
 
+    public static final Scale MELODIC_MINOR = new Scale(
+        Interval.MAJ2,
+        Interval.MIN2,
+        Interval.MAJ2,
+        Interval.MAJ2,
+        Interval.MAJ2,
+        Interval.MAJ2,
+        Interval.MIN2)
+        .setName("Melodic minor");
+    
+    /**
+     * Natural minor with the notes of harmonic and melodic minor in there
+     * Example: A B C D E F F# G# G
+     * Not really a Scale, just a collection of notes, whatever
+     * 
+     */
+    public static final Scale GENERAL_MINOR = new Scale(
+        Interval.MAJ2, // A -> B
+        Interval.MIN2, // B -> C
+        Interval.MAJ2, // C -> D
+        Interval.MAJ2, // D -> E
+        Interval.MIN2, // E -> F
+        Interval.MIN2, // F -> F#
+        Interval.MIN2, // F# -> G
+        Interval.MIN2, // G -> G#
+        Interval.MIN2) // G# -> A
+        .setName("General minor");
+    
+    
 
     private CircularLinkedList<Interval> intervals;
     private List<Integer> semitonesFromRootList;
@@ -203,12 +232,15 @@ public class Scale {
         return semitonesFromRootList;
     }
     
-    private Scale setName(String name){
+    public Scale setName(String name){
         
         this.name  = name;
         
         return this;
     }
 
+    public String getName() {
+        return name;
+    }
 }
 

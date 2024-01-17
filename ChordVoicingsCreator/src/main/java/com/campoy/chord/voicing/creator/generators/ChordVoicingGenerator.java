@@ -1,4 +1,4 @@
-package com.campoy.chord.voicing.creator.util;
+package com.campoy.chord.voicing.creator.generators;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,42 +26,54 @@ import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
-import com.campoy.chord.voicing.creator.model.ChordConstructor;
-import com.campoy.chord.voicing.creator.model.ChordVoicing;
-import com.campoy.chord.voicing.creator.model.FretAction;
-import com.campoy.chord.voicing.creator.model.GuitarString;
-import com.campoy.chord.voicing.creator.model.Interval;
-import com.campoy.chord.voicing.creator.model.Note;
-import com.campoy.chord.voicing.creator.model.OctavatedNote;
-import com.campoy.chord.voicing.creator.model.Scale;
-import com.campoy.chord.voicing.creator.model.Tuning;
+import com.campoy.chord.voicing.creator.model.guitar.ChordVoicing;
+import com.campoy.chord.voicing.creator.model.guitar.FretAction;
+import com.campoy.chord.voicing.creator.model.guitar.GuitarString;
+import com.campoy.chord.voicing.creator.model.guitar.Tuning;
+import com.campoy.chord.voicing.creator.model.musictheory.ChordConstructor;
+import com.campoy.chord.voicing.creator.model.musictheory.Interval;
+import com.campoy.chord.voicing.creator.model.musictheory.Note;
+import com.campoy.chord.voicing.creator.model.musictheory.OctavatedNote;
+import com.campoy.chord.voicing.creator.model.musictheory.Scale;
 
 import javafx.util.Pair;
 
 public class ChordVoicingGenerator {
 
+    /**
+     * Generates chord voicings for stringed instruments such as guitar, bass, mandolin, etc, 
+     * and filter the chord voicings to find the useful ones 
+     * 
+     */
+    
+    
     public static void main(String[] args) throws FileNotFoundException {
     	        
         ChordVoicingGenerator chordVoicingGenerator = new ChordVoicingGenerator();
+        
         Tuning tuning = Tuning.DROP_A_7_STRING_GUITAR;
         int fretSpan = 3; // number of frets that one can comfortably span with their fingers
-        int firstFretToScan = 5;
-        int lastFretToScan = 15; // total number of frets
+        int firstFretToScan = 8;
+        int lastFretToScan = 10;
         // minimum number of semitones between notes of the voicing, used by example to
         // filter out voicings where the maj7th/min2nd and the root are right next to each other
         int minimumSemitonesBetweenNotesOfTheVoicing  = 2; 
         List<Scale> searchedScales = Arrays.asList(
                 Scale.AEOLIAN,
+                Scale.HARMONIC_MINOR,
                 Scale.PHRYGIAN_DOMINANT
                 );
         List<Note> allowedScaleRoots = Arrays.asList(
                 Note.E);
         int minNumberOfDifferentNotes = 2;
         int maxNumberOfDifferentNotes = 4;
-        int mustContainAtLeastThisManyOpenStrings = 2;
+        int mustContainAtLeastThisManyOpenStrings = 0;
+        int mustContainAtMostThisManyOpenStrings = 2;
         int minimumNumberOfMutedLowestStrings = 0;
         int minimumNumberOfMutedHighestStrings = 0;
         boolean forbidTheSameNoteOnTheSameOctave = true; 
+        Optional<OctavatedNote> lowestNoteAllowed = Optional.of(new OctavatedNote(Note.A, 3));
+        Optional<OctavatedNote> highestNoteAllowed = Optional.of(new OctavatedNote(Note.A, 6));
         
         Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale = 
                 computeMapOfScaleToMapOfRootsToNotesOfScale(searchedScales, allowedScaleRoots);
@@ -95,6 +107,15 @@ public class ChordVoicingGenerator {
             return (numberOfOpenStrings >= mustContainAtLeastThisManyOpenStrings);
         });
         filters.add(voicing -> {
+            int numberOfOpenStrings = 0;
+            for(Entry<GuitarString, FretAction> entry : voicing.getFrettings().entrySet()) {
+                if(entry.getValue().isOpen()) {
+                    numberOfOpenStrings++;
+                }
+            }
+            return (numberOfOpenStrings <= mustContainAtMostThisManyOpenStrings);
+        });
+        filters.add(voicing -> {
             
             boolean passed = true;
             for( int stringNumber = 0; 
@@ -118,7 +139,23 @@ public class ChordVoicingGenerator {
             return passed;
             
         });
-       
+        filters.add(voicing -> {
+            if(highestNoteAllowed.isEmpty()) {
+                return true;
+            }
+            else {
+                return voicing.getHighestNote(tuning).isLowerThan(highestNoteAllowed.get());
+            }
+        });
+        filters.add(voicing -> {
+            if(lowestNoteAllowed.isEmpty()) {
+                return true;
+            }
+            else {
+                return voicing.getLowestNote(tuning).isHigherThan(lowestNoteAllowed.get());
+            }
+        });
+        
 //        Path filePath = Paths.get("C:/Users/Mickael/eclipse-workspace/PancakeMusicProjects/Voices.txt");
         Path filePath = Paths.get("./Voices.txt");
         System.out.println("Printing to " + filePath.toAbsolutePath());

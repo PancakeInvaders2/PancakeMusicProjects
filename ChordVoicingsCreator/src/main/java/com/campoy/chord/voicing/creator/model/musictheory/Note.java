@@ -1,22 +1,22 @@
-package com.campoy.chord.voicing.creator.model;
+package com.campoy.chord.voicing.creator.model.musictheory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public enum Note {
 
-    A(0, "A"),
-    A_SHARP(1, "A#"),
-    B(2, "B"),
-    C(3, "C"),
-    C_SHARP(4, "C#"),
-    D(5, "D"),
-    D_SHARP(6, "D#"),
-    E(7, "E"),
-    F(8, "F"),
-    F_SHARP(9, "F#"),
-    G(10, "G"),
-    G_SHARP(11, "G#");
+    A(0, "A", null),
+    A_SHARP(1, "A#", "Gb"),
+    B(2, "B", null),
+    C(3, "C", null),
+    C_SHARP(4, "C#", "Db"),
+    D(5, "D", null),
+    D_SHARP(6, "D#", "Eb"),
+    E(7, "E", null),
+    F(8, "F", null),
+    F_SHARP(9, "F#", "Gb"),
+    G(10, "G", null),
+    G_SHARP(11, "G#", "Ab");
     
     static Map<Integer, Note> mapOfSemitonesFromA = new HashMap<>();
     
@@ -26,13 +26,14 @@ public enum Note {
         }
     }
     
-    int semitonesFromA;
+    private int semitonesFromA;
+    private String mainRepresentation;
+    private String secondaryRepresentation;
     
-    String representation;
-        
-    private Note(int semitonesFromA, String representation) {
+    private Note(int semitonesFromA, String mainRepresentation, String secondaryRepresentation) {
         this.semitonesFromA = semitonesFromA;
-        this.representation = representation;
+        this.mainRepresentation = mainRepresentation;
+        this.secondaryRepresentation = secondaryRepresentation;
     }
     
     public int getSemitonesFromA() {
@@ -55,7 +56,16 @@ public enum Note {
     
     @Override
     public String toString() {
-        return this.representation;
+        return this.mainRepresentation;
+    }
+    
+    public String fullRepresentation() {
+        if(secondaryRepresentation == null) {
+            return mainRepresentation;
+        }
+        else {
+            return mainRepresentation + "/" + secondaryRepresentation;
+        }
     }
     
 

@@ -1,4 +1,4 @@
-package com.campoy.chord.voicing.creator.model;
+package com.campoy.chord.voicing.creator.model.musictheory;
 
 public class CircularLinkedListNode <T> {
     

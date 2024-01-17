@@ -1,9 +1,13 @@
-package com.campoy.chord.voicing.creator.model;
+package com.campoy.chord.voicing.creator.model.guitar;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.campoy.chord.voicing.creator.model.musictheory.Note;
+import com.campoy.chord.voicing.creator.model.musictheory.OctavatedNote;
+
 import java.util.StringJoiner;
 
 public class Tuning {
