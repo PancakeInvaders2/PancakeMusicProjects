@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.campoy.chord.voicing.creator.model.musictheory.Note;
-import com.campoy.chord.voicing.creator.model.musictheory.Scale;
+import com.campoy.chord.voicing.creator.model.musictheory.Key;
 import com.campoy.chord.voicing.creator.model.tinwhistle.NoteAndFingering;
+import com.campoy.chord.voicing.creator.model.tinwhistle.SevenHoleWhistle6Front1Flat6LowerBackThumb;
 import com.campoy.chord.voicing.creator.model.tinwhistle.SixHoleWhistle;
 import com.campoy.chord.voicing.creator.model.tinwhistle.WhistleFingering;
 
@@ -20,12 +21,12 @@ public class TinWhistleKeyGenerator {
     
     public static void main(String[] args) {
      
-        List<Scale> scalesToSearch = new ArrayList<>();
+        List<Key> scalesToSearch = new ArrayList<>();
         
-        List<Scale> majorModes = Scale.MAJOR.modes();
-        List<Scale> harmonicMinorModes = Scale.HARMONIC_MINOR.modes();
-        List<Scale> melodicMinorModes = Scale.MELODIC_MINOR.modes();
-
+        List<Key> majorModes = Key.MAJOR.modes();
+        List<Key> harmonicMinorModes = Key.HARMONIC_MINOR.modes();
+        List<Key> melodicMinorModes = Key.MELODIC_MINOR.modes();
+        List<Key> doubleHarmonicMajorModes = Key.DOUBLE_HARMONIC_MAJOR.modes();
         
         scalesToSearch.add(majorModes.get(0).setName("Major"));
         scalesToSearch.add(majorModes.get(1).setName("Dorian"));
@@ -51,15 +52,25 @@ public class TinWhistleKeyGenerator {
         scalesToSearch.add(melodicMinorModes.get(5).setName("Locrian nat2/Aeolian b5"));
         scalesToSearch.add(melodicMinorModes.get(6).setName("Altered scale (SuperLocrian)"));
         
-        scalesToSearch.add(Scale.GENERAL_MINOR.setName("General minor"));
-
-        List<SixHoleWhistle> whistles = new ArrayList<>();
+        scalesToSearch.add(Key.HARMONIC_AND_NATURAL_MINOR.setName("Natural+Harmonic minor"));
+        
+        scalesToSearch.add(Key.GENERAL_MINOR.setName("General minor (natural+harmonic+melodic)"));
+        
+        scalesToSearch.add(doubleHarmonicMajorModes.get(0).setName("Double harmonic major"));
+        scalesToSearch.add(doubleHarmonicMajorModes.get(1).setName("Lydian #2 #6"));
+        scalesToSearch.add(doubleHarmonicMajorModes.get(2).setName("Ultraphrygian"));
+        scalesToSearch.add(doubleHarmonicMajorModes.get(3).setName("Hungarian minor"));
+        scalesToSearch.add(doubleHarmonicMajorModes.get(4).setName("Oriental scale"));
+        scalesToSearch.add(doubleHarmonicMajorModes.get(5).setName("Ionian #2 #5"));
+        scalesToSearch.add(doubleHarmonicMajorModes.get(6).setName("Locrian bb3 bb7"));
+        
+        List<SevenHoleWhistle6Front1Flat6LowerBackThumb> whistles = new ArrayList<>();
         
         for( Note note : Note.values()) {
-            SixHoleWhistle whistle = new SixHoleWhistle(note);
+            SevenHoleWhistle6Front1Flat6LowerBackThumb whistle = new SevenHoleWhistle6Front1Flat6LowerBackThumb(note);
             whistles.add(whistle);
             for( Note scaleRoot : Note.values()) {
-                for ( Scale scaleToSearch : scalesToSearch ) {
+                for ( Key scaleToSearch : scalesToSearch ) {
                     List<Note> scaleNotes = scaleNotes(scaleRoot, 
                                                        scaleToSearch.getSemitonesFromRootList());
 

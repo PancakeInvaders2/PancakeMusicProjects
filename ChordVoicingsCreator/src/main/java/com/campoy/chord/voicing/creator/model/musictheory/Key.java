@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class Scale {
+public class Key {
     
-    public static final Scale MAJOR = new Scale(
+    public static final Key MAJOR = new Key(
             Interval.MAJ2,
             Interval.MAJ2,
             Interval.MIN2,
@@ -17,17 +17,17 @@ public class Scale {
             Interval.MIN2)
             .setName("Major");
     
-    public static final Scale IONIAN = MAJOR.modes().get(0).setName("Major");
-    public static final Scale DORIAN = MAJOR.modes().get(1).setName("Dorian");
-    public static final Scale PHRYGIAN = MAJOR.modes().get(2).setName("Phrygian");
-    public static final Scale LYDIAN = MAJOR.modes().get(3).setName("Lydian");
-    public static final Scale MIXOLYDIAN = MAJOR.modes().get(4).setName("Mixolydian");
-    public static final Scale AEOLIAN = MAJOR.modes().get(5).setName("Minor");
-    public static final Scale LOCRIAN = MAJOR.modes().get(6).setName("Locrian");
+    public static final Key IONIAN = MAJOR.modes().get(0).setName("Major");
+    public static final Key DORIAN = MAJOR.modes().get(1).setName("Dorian");
+    public static final Key PHRYGIAN = MAJOR.modes().get(2).setName("Phrygian");
+    public static final Key LYDIAN = MAJOR.modes().get(3).setName("Lydian");
+    public static final Key MIXOLYDIAN = MAJOR.modes().get(4).setName("Mixolydian");
+    public static final Key AEOLIAN = MAJOR.modes().get(5).setName("Minor");
+    public static final Key LOCRIAN = MAJOR.modes().get(6).setName("Locrian");
 
-    public static final Scale MINOR = AEOLIAN;
+    public static final Key MINOR = AEOLIAN;
     
-    public static final Scale HARMONIC_MINOR = new Scale(
+    public static final Key HARMONIC_MINOR = new Key(
         Interval.MAJ2,
         Interval.MIN2,
         Interval.MAJ2,
@@ -37,10 +37,10 @@ public class Scale {
         Interval.MIN2)
         .setName("Harmonic minor");
     
-    public static final Scale PHRYGIAN_DOMINANT = 
+    public static final Key PHRYGIAN_DOMINANT = 
             HARMONIC_MINOR.modes().get(4).setName("Phrygian dominant");
 
-    public static final Scale MELODIC_MINOR = new Scale(
+    public static final Key MELODIC_MINOR = new Key(
         Interval.MAJ2,
         Interval.MIN2,
         Interval.MAJ2,
@@ -53,10 +53,26 @@ public class Scale {
     /**
      * Natural minor with the notes of harmonic and melodic minor in there
      * Example: A B C D E F F# G# G
-     * Not really a Scale, just a collection of notes, whatever
      * 
      */
-    public static final Scale GENERAL_MINOR = new Scale(
+    public static final Key HARMONIC_AND_NATURAL_MINOR = new Key(
+         Interval.MAJ2, // A -> B
+         Interval.MIN2, // B -> C
+         Interval.MAJ2, // C -> D 
+         Interval.MAJ2, // D -> E
+         Interval.MIN2, // E -> F
+         Interval.MAJ2, // F -> G
+         Interval.MIN2, // G -> G#
+         Interval.MIN2)  // G# -> A 
+         .setName("Harmonic+Natural minor");
+
+    /**
+     * Natural minor with the notes of harmonic and melodic minor in there
+     * Example: A B C D E F F# G# G
+     * Not really a Key, just a collection of notes, whatever
+     * 
+     */
+    public static final Key GENERAL_MINOR = new Key(
         Interval.MAJ2, // A -> B
         Interval.MIN2, // B -> C
         Interval.MAJ2, // C -> D
@@ -68,19 +84,30 @@ public class Scale {
         Interval.MIN2) // G# -> A
         .setName("General minor");
     
-    
+    public static final Key DOUBLE_HARMONIC_MAJOR = new Key(
+        Interval.MIN2, // half, 
+        Interval.MIN3, // augmented second, 
+        Interval.MIN2, // half, 
+        Interval.MAJ2, // whole, 
+        Interval.MIN2, // half, 
+        Interval.MIN3, // augmented second, 
+        Interval.MIN2  // half 
+    )
+    .setName("Double-harmonic minor"); 
+
 
     private CircularLinkedList<Interval> intervals;
     private List<Integer> semitonesFromRootList;
 
     private String name = null;
+    List<Key> modes = null;
     
-    private Scale(){
+    private Key(){
         intervals = new CircularLinkedList<>();
         semitonesFromRootList = new ArrayList<>();
     }
     
-    public Scale(CircularLinkedList<Interval> pSemitoneIntervals)
+    public Key(CircularLinkedList<Interval> pSemitoneIntervals)
     {
         this();
         
@@ -99,15 +126,15 @@ public class Scale {
         }
     }
     
-    public Scale(Scale other){
+    public Key(Key other){
         this(other.intervals);
     }
     
-    public Scale(Interval ... pSemitoneIntervals){  
+    public Key(Interval ... pSemitoneIntervals){  
         this(Arrays.asList(pSemitoneIntervals));    
     }
     
-    public Scale(List<Interval> pSemitoneIntervals){
+    public Key(List<Interval> pSemitoneIntervals){
         this();
         
         int semitonesFromRoot = 0;
@@ -133,21 +160,20 @@ public class Scale {
         return intervals;
     }
     
-    public List<Scale> modes()
+    public List<Key> modes()
     {
-        List<Scale> modes = new ArrayList<>();
-
-        for (List<CircularLinkedListNode<Interval>> intervalMode : intervals.modes())
-        {
-            List<Interval> intervalModeValues = new ArrayList<>();
-            
-            for(CircularLinkedListNode<Interval> intervalNode: intervalMode)
+        if(modes == null) {
+            List<Key> tModes = new ArrayList<>();
+            for (List<CircularLinkedListNode<Interval>> intervalMode : intervals.modes())
             {
-                intervalModeValues.add(intervalNode.value);
+                List<Interval> intervalModeValues = new ArrayList<>();
+                for(CircularLinkedListNode<Interval> intervalNode: intervalMode)
+                {
+                    intervalModeValues.add(intervalNode.value);
+                }
+                tModes.add(new Key(intervalModeValues));
             }
-            
-            modes.add(new Scale(intervalModeValues));
-
+            modes = tModes;
         }
         
         return modes;
@@ -174,11 +200,11 @@ public class Scale {
     @Override
     public boolean equals(Object obj) {
         
-        if(!(obj instanceof Scale))
+        if(!(obj instanceof Key))
         {
             return false;
         }
-        Scale other = (Scale)obj;
+        Key other = (Key)obj;
         
         boolean ret = false;
         
@@ -217,7 +243,7 @@ public class Scale {
         
         StringJoiner sj = new StringJoiner(",");
         intervals.forEach((interval) -> {
-            sj.add(interval.getScaleRepresentation());            
+            sj.add(interval.getKeyRepresentation());            
         });
         
         return "[" + sj.toString() + "]"; 
@@ -232,7 +258,7 @@ public class Scale {
         return semitonesFromRootList;
     }
     
-    public Scale setName(String name){
+    public Key setName(String name){
         
         this.name  = name;
         

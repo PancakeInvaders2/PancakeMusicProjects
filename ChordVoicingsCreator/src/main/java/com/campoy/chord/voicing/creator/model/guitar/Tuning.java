@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.campoy.chord.voicing.creator.model.musictheory.Note;
-import com.campoy.chord.voicing.creator.model.musictheory.OctavatedNote;
+import com.campoy.chord.voicing.creator.model.musictheory.NoteAndOctave;
 
 import java.util.StringJoiner;
 
@@ -33,106 +33,106 @@ public class Tuning {
     static {
 
         STANDARD_7_STRING_GUITAR.stringNotes.put(new GuitarString(0),
-                new OctavatedNote(Note.B, 2));
+                new NoteAndOctave(Note.B, 2));
         STANDARD_7_STRING_GUITAR.stringNotes.put(new GuitarString(1),
-                new OctavatedNote(Note.E, 2));
+                new NoteAndOctave(Note.E, 2));
         STANDARD_7_STRING_GUITAR.stringNotes.put(new GuitarString(2),
-                new OctavatedNote(Note.A, 3));
+                new NoteAndOctave(Note.A, 3));
         STANDARD_7_STRING_GUITAR.stringNotes.put(new GuitarString(3),
-                new OctavatedNote(Note.D, 3));
+                new NoteAndOctave(Note.D, 3));
         STANDARD_7_STRING_GUITAR.stringNotes.put(new GuitarString(4),
-                new OctavatedNote(Note.G, 3));
+                new NoteAndOctave(Note.G, 3));
         STANDARD_7_STRING_GUITAR.stringNotes.put(new GuitarString(5),
-                new OctavatedNote(Note.B, 4));
+                new NoteAndOctave(Note.B, 4));
         STANDARD_7_STRING_GUITAR.stringNotes.put(new GuitarString(6),
-                new OctavatedNote(Note.E, 4));
+                new NoteAndOctave(Note.E, 4));
         
         DROP_A_7_STRING_GUITAR.stringNotes.put(new GuitarString(0),
-                new OctavatedNote(Note.A, 2));
+                new NoteAndOctave(Note.A, 2));
         DROP_A_7_STRING_GUITAR.stringNotes.put(new GuitarString(1),
-                new OctavatedNote(Note.E, 2));
+                new NoteAndOctave(Note.E, 2));
         DROP_A_7_STRING_GUITAR.stringNotes.put(new GuitarString(2),
-                new OctavatedNote(Note.A, 3));
+                new NoteAndOctave(Note.A, 3));
         DROP_A_7_STRING_GUITAR.stringNotes.put(new GuitarString(3),
-                new OctavatedNote(Note.D, 3));
+                new NoteAndOctave(Note.D, 3));
         DROP_A_7_STRING_GUITAR.stringNotes.put(new GuitarString(4),
-                new OctavatedNote(Note.G, 3));
+                new NoteAndOctave(Note.G, 3));
         DROP_A_7_STRING_GUITAR.stringNotes.put(new GuitarString(5),
-                new OctavatedNote(Note.B, 4));
+                new NoteAndOctave(Note.B, 4));
         DROP_A_7_STRING_GUITAR.stringNotes.put(new GuitarString(6),
-                new OctavatedNote(Note.E, 4));
+                new NoteAndOctave(Note.E, 4));
         
         STANDARD_6_STRING_GUITAR.stringNotes.put(new GuitarString(0),
-                new OctavatedNote(Note.E, 2));
+                new NoteAndOctave(Note.E, 2));
         STANDARD_6_STRING_GUITAR.stringNotes.put(new GuitarString(1),
-                new OctavatedNote(Note.A, 3));
+                new NoteAndOctave(Note.A, 3));
         STANDARD_6_STRING_GUITAR.stringNotes.put(new GuitarString(2),
-                new OctavatedNote(Note.D, 3));
+                new NoteAndOctave(Note.D, 3));
         STANDARD_6_STRING_GUITAR.stringNotes.put(new GuitarString(3),
-                new OctavatedNote(Note.G, 3));
+                new NoteAndOctave(Note.G, 3));
         STANDARD_6_STRING_GUITAR.stringNotes.put(new GuitarString(4),
-                new OctavatedNote(Note.B, 4));
+                new NoteAndOctave(Note.B, 4));
         STANDARD_6_STRING_GUITAR.stringNotes.put(new GuitarString(5),
-                new OctavatedNote(Note.E, 4));
+                new NoteAndOctave(Note.E, 4));
         
         DROP_D_6_STRING_GUITAR.stringNotes.put(new GuitarString(0),
-                new OctavatedNote(Note.D, 2));
+                new NoteAndOctave(Note.D, 2));
         DROP_D_6_STRING_GUITAR.stringNotes.put(new GuitarString(1),
-                new OctavatedNote(Note.A, 3));
+                new NoteAndOctave(Note.A, 3));
         DROP_D_6_STRING_GUITAR.stringNotes.put(new GuitarString(2),
-                new OctavatedNote(Note.D, 3));
+                new NoteAndOctave(Note.D, 3));
         DROP_D_6_STRING_GUITAR.stringNotes.put(new GuitarString(3),
-                new OctavatedNote(Note.G, 3));
+                new NoteAndOctave(Note.G, 3));
         DROP_D_6_STRING_GUITAR.stringNotes.put(new GuitarString(4),
-                new OctavatedNote(Note.B, 4));
+                new NoteAndOctave(Note.B, 4));
         DROP_D_6_STRING_GUITAR.stringNotes.put(new GuitarString(5),
-                new OctavatedNote(Note.E, 4));
+                new NoteAndOctave(Note.E, 4));
         
         STANDARD_4_STRING_BASS.stringNotes.put(new GuitarString(0),
-                new OctavatedNote(Note.E, 1));
+                new NoteAndOctave(Note.E, 1));
         STANDARD_4_STRING_BASS.stringNotes.put(new GuitarString(1),
-                new OctavatedNote(Note.A, 2));
+                new NoteAndOctave(Note.A, 2));
         STANDARD_4_STRING_BASS.stringNotes.put(new GuitarString(2),
-                new OctavatedNote(Note.D, 2));
+                new NoteAndOctave(Note.D, 2));
         STANDARD_4_STRING_BASS.stringNotes.put(new GuitarString(3),
-                new OctavatedNote(Note.G, 2));
+                new NoteAndOctave(Note.G, 2));
         
         STANDARD_5_STRING_BASS.stringNotes.put(new GuitarString(0),
-                new OctavatedNote(Note.B, 1));
+                new NoteAndOctave(Note.B, 1));
         STANDARD_5_STRING_BASS.stringNotes.put(new GuitarString(1),
-                new OctavatedNote(Note.E, 1));
+                new NoteAndOctave(Note.E, 1));
         STANDARD_5_STRING_BASS.stringNotes.put(new GuitarString(2),
-                new OctavatedNote(Note.A, 2));
+                new NoteAndOctave(Note.A, 2));
         STANDARD_5_STRING_BASS.stringNotes.put(new GuitarString(3),
-                new OctavatedNote(Note.D, 2));
+                new NoteAndOctave(Note.D, 2));
         STANDARD_5_STRING_BASS.stringNotes.put(new GuitarString(4),
-                new OctavatedNote(Note.G, 2));
+                new NoteAndOctave(Note.G, 2));
         
         STANDARD_6_STRING_BASS.stringNotes.put(new GuitarString(0),
-                new OctavatedNote(Note.B, 1));
+                new NoteAndOctave(Note.B, 1));
         STANDARD_6_STRING_BASS.stringNotes.put(new GuitarString(1),
-                new OctavatedNote(Note.E, 1));
+                new NoteAndOctave(Note.E, 1));
         STANDARD_6_STRING_BASS.stringNotes.put(new GuitarString(2),
-                new OctavatedNote(Note.A, 2));
+                new NoteAndOctave(Note.A, 2));
         STANDARD_6_STRING_BASS.stringNotes.put(new GuitarString(3),
-                new OctavatedNote(Note.D, 2));
+                new NoteAndOctave(Note.D, 2));
         STANDARD_6_STRING_BASS.stringNotes.put(new GuitarString(4),
-                new OctavatedNote(Note.G, 2));
+                new NoteAndOctave(Note.G, 2));
         STANDARD_6_STRING_BASS.stringNotes.put(new GuitarString(5),
-                new OctavatedNote(Note.C, 3));
+                new NoteAndOctave(Note.C, 3));
 
     }
     
-    private final Map<GuitarString, OctavatedNote> stringNotes = new HashMap<>();
+    private final Map<GuitarString, NoteAndOctave> stringNotes = new HashMap<>();
     
     private Tuning() {
     }
     
-    public Tuning(Map<GuitarString, OctavatedNote> stringNotes) {
+    public Tuning(Map<GuitarString, NoteAndOctave> stringNotes) {
         this.stringNotes.putAll(stringNotes);
     }
     
-    public Map<GuitarString, OctavatedNote> getStringNotes() {
+    public Map<GuitarString, NoteAndOctave> getStringNotes() {
         return Collections.unmodifiableMap(stringNotes);        
     }
     
@@ -153,11 +153,11 @@ public class Tuning {
             return false;
         }
                 
-        for(Entry<GuitarString, OctavatedNote> entry : this.stringNotes.entrySet()) {
+        for(Entry<GuitarString, NoteAndOctave> entry : this.stringNotes.entrySet()) {
             
             GuitarString guitarString = entry.getKey();
-            OctavatedNote stringNote = entry.getValue();
-            OctavatedNote otherStringNote = objTuning.stringNotes.get(guitarString);
+            NoteAndOctave stringNote = entry.getValue();
+            NoteAndOctave otherStringNote = objTuning.stringNotes.get(guitarString);
             
             if(stringNote != otherStringNote 
                     && !stringNote.equals(otherStringNote)) {
@@ -173,7 +173,7 @@ public class Tuning {
         
         StringJoiner sj = new StringJoiner(" "); 
         for(int i = 0; i < stringNotes.size(); i++) {
-            OctavatedNote stringNote = stringNotes.get(new GuitarString(i));
+            NoteAndOctave stringNote = stringNotes.get(new GuitarString(i));
             sj.add(stringNote.toString());
         }
         return sj.toString();

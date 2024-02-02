@@ -34,8 +34,8 @@ import com.campoy.chord.voicing.creator.model.guitar.Tuning;
 import com.campoy.chord.voicing.creator.model.musictheory.ChordConstructor;
 import com.campoy.chord.voicing.creator.model.musictheory.Interval;
 import com.campoy.chord.voicing.creator.model.musictheory.Note;
-import com.campoy.chord.voicing.creator.model.musictheory.OctavatedNote;
-import com.campoy.chord.voicing.creator.model.musictheory.Scale;
+import com.campoy.chord.voicing.creator.model.musictheory.NoteAndOctave;
+import com.campoy.chord.voicing.creator.model.musictheory.Key;
 
 import lombok.Data;
 
@@ -50,33 +50,43 @@ public class ChordVoicingGenerator {
     
     public static void main(String[] args) throws FileNotFoundException {
     	        
-        ChordVoicingGenerator chordVoicingGenerator = new ChordVoicingGenerator();
+        ChordVoicingGenerator chordVoicingGenerator = new ChordVoicingGenerator();  
         
-        Tuning tuning = Tuning.DROP_A_7_STRING_GUITAR;
-        int fretSpan = 3; // number of frets that one can comfortably span with their fingers
-        int firstFretToScan = 8;
-        int lastFretToScan = 10;
-        // minimum number of semitones between notes of the voicing, used by example to
-        // filter out voicings where the maj7th/min2nd and the root are right next to each other
-        int minimumSemitonesBetweenNotesOfTheVoicing  = 2; 
-        List<Scale> searchedScales = Arrays.asList(
-                Scale.AEOLIAN,
-                Scale.HARMONIC_MINOR,
-                Scale.PHRYGIAN_DOMINANT
-                );
-        List<Note> allowedScaleRoots = Arrays.asList(
-                Note.E);
-        int minNumberOfDifferentNotes = 2;
-        int maxNumberOfDifferentNotes = 4;
-        int mustContainAtLeastThisManyOpenStrings = 0;
-        int mustContainAtMostThisManyOpenStrings = 2;
-        int minimumNumberOfMutedLowestStrings = 0;
-        int minimumNumberOfMutedHighestStrings = 0;
-        boolean forbidTheSameNoteOnTheSameOctave = true; 
-        Optional<OctavatedNote> lowestNoteAllowed = Optional.of(new OctavatedNote(Note.A, 3));
-        Optional<OctavatedNote> highestNoteAllowed = Optional.of(new OctavatedNote(Note.A, 6));
+        Tuning tuning = Tuning.DROP_D_6_STRING_GUITAR;  
         
-        Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale = 
+        int fretSpan = 3; // maximum fret span that the voicings are allowed to have / number of frets that one can comfortably span with their fingers  
+        int firstFretToScan = 5;  
+        int lastFretToScan = 11;  
+        
+        // minimum number of semitones between notes of the voicing, used by example to  
+        // filter out voicings where the maj7th/min2nd and the root are right next to each other  
+        int minimumSemitonesBetweenNotesOfTheVoicing  = 2;  
+        
+        List<Key> searchedScales = Arrays.asList(  
+                Key.AEOLIAN  
+                , Key.HARMONIC_MINOR  
+                );  
+        
+        List<Note> allowedScaleRoots = Arrays.asList(  
+                Note.E);  
+        
+        int minNumberOfDifferentNotes = 3;  
+        int maxNumberOfDifferentNotes = 4;  
+        int mustContainAtLeastThisManyOpenStrings = 0;  
+        int mustContainAtMostThisManyOpenStrings = 2;  
+        int minimumNumberOfMutedLowestStrings = 0;  
+        int minimumNumberOfMutedHighestStrings = 0;  
+        
+        boolean forbidTheSameNoteOnTheSameOctaveOnDifferentStrings = true;  
+        
+        boolean hideChordVoicingsThatDoNotHaveAThirdOrAFifth = true;
+        
+        NoteAndOctave lowestNoteAllowed = new NoteAndOctave(Note.E, 3);  
+        NoteAndOctave highestNoteAllowed = new NoteAndOctave(Note.E, 6);  
+        
+        // ------
+        
+        Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale = 
                 computeMapOfScaleToMapOfRootsToNotesOfScale(searchedScales, allowedScaleRoots);
                     
         List<Predicate<ChordVoicing>> filters = new ArrayList<>();
@@ -94,7 +104,7 @@ public class ChordVoicingGenerator {
         });
         filters.add(voicing -> {
         	
-        	return forbidTheSameNoteOnTheSameOctave 
+        	return forbidTheSameNoteOnTheSameOctaveOnDifferentStrings 
         			&& !voicing.getHasSeveralTimesTheSameNoteOnTheSameOctave();
 
         });
@@ -141,21 +151,21 @@ public class ChordVoicingGenerator {
             
         });
         filters.add(voicing -> {
-            if(highestNoteAllowed.isEmpty()) {
-                return true;
-            }
-            else {
-                return voicing.getHighestNote(tuning).isLowerThan(highestNoteAllowed.get());
-            }
+            return highestNoteAllowed == null 
+                    || voicing.getHighestNote(tuning).isLowerThan(highestNoteAllowed);
+            
         });
         filters.add(voicing -> {
-            if(lowestNoteAllowed.isEmpty()) {
-                return true;
-            }
-            else {
-                return voicing.getLowestNote(tuning).isHigherThan(lowestNoteAllowed.get());
-            }
+            return lowestNoteAllowed == null 
+                    || voicing.getLowestNote(tuning).isHigherThan(lowestNoteAllowed);
+        
         });
+        filters.add(voicing -> {
+            return !hideChordVoicingsThatDoNotHaveAThirdOrAFifth 
+                    || voicing.doAnyOfTheRepresentationsHaveAThirdOrAFifth(tuning);
+        });
+        
+        
         
 //        Path filePath = Paths.get("C:/Users/Mickael/eclipse-workspace/PancakeMusicProjects/Voices.txt");
         Path filePath = Paths.get("./Voices.txt");
@@ -175,7 +185,8 @@ public class ChordVoicingGenerator {
         		lastFretToScan, 
         		filters,
         		out,
-        		scaleToMapOfRootsToNotesOfScale);
+        		scaleToMapOfRootsToNotesOfScale,
+        		hideChordVoicingsThatDoNotHaveAThirdOrAFifth);
         }
         finally {
             
@@ -186,11 +197,11 @@ public class ChordVoicingGenerator {
                 
     }
 
-    private static Map<Scale, Map<Note, List<Note>>> computeMapOfScaleToMapOfRootsToNotesOfScale(
-            List<Scale> searchedScales, List<Note> allowedRoots) {
-        Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale = new HashMap<>();
+    private static Map<Key, Map<Note, List<Note>>> computeMapOfScaleToMapOfRootsToNotesOfScale(
+            List<Key> searchedScales, List<Note> allowedRoots) {
+        Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale = new HashMap<>();
         
-        for(Scale searchedScale : searchedScales ) {
+        for(Key searchedScale : searchedScales ) {
             Map<Note, List<Note>> rootsToNotesOfScale = new HashMap<>();
             for(Note root : Note.values()) {
                 
@@ -217,7 +228,8 @@ public class ChordVoicingGenerator {
             int firstFretToScan,
             int lastFretToScan,
             List<Predicate<ChordVoicing>> filters,
-            PrintStream output, Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {
+            PrintStream output, Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale,
+            boolean hideChordVoicingsThatDoNotHaveAThirdOrAFifth) {
         
         System.out.println("Generating voicings for the tuning " + tuning );
         
@@ -243,26 +255,26 @@ public class ChordVoicingGenerator {
                     + " generated succesfully");
             
             for(ChordVoicing voicing : voicings) {
+                                
+                output.println("____________ " + voicing.noteRepresentation(tuning) + "  ");
                 
-                output.println("____________ " + voicing.noteRepresentation(tuning));
-                
-            	for( String fullRepresentation : voicing.fullRepresentations(tuning)) {
+            	for( String fullRepresentation : voicing.fullRepresentations(tuning, hideChordVoicingsThatDoNotHaveAThirdOrAFifth)) {
             	    output.println(
                             "_________ " 
                             + fullRepresentation
-                            + ":");
+                            + ":  ");
             	}
-            	output.println(voicing.toString());
-            	output.println(voicing.notesOnStrings());
+            	output.println(voicing.toString() + "  ");
+            	output.println(voicing.notesOnStrings() + "  ");
             	StringJoiner sj = new StringJoiner(", ");
             	for(ScaleAndRoot compatibleScaleAndRoot : voicing.getCompatibleScalesAndRoots()) {
-            	    sj.add(compatibleScaleAndRoot.getScale() 
+            	    sj.add(compatibleScaleAndRoot.getRoot() 
             	            + " " 
-            	            + compatibleScaleAndRoot.getRoot());
+            	            + compatibleScaleAndRoot.getScale());
             	}
-                output.println("Diatonic to " + sj.toString());
+                output.println("Diatonic to " + sj.toString() + "  ");
 
-            	output.println("__________________________");
+            	output.println("__________________________  ");
             }
                     
         });
@@ -276,7 +288,7 @@ public class ChordVoicingGenerator {
             Integer lowestFretToScan, 
             Integer highestFretToScan,
             List<Predicate<ChordVoicing>> filters,
-            Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale){
+            Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale){
                 
         if(lowestFretToScan == null
                 || lowestFretToScan == 0) {
@@ -286,20 +298,20 @@ public class ChordVoicingGenerator {
             highestFretToScan = 5;
         }
         
-        Map<Integer, Map<Integer, OctavatedNote>> stringNumberToFretNumberToNote
+        Map<Integer, Map<Integer, NoteAndOctave>> stringNumberToFretNumberToNote
             = new HashMap<>();
         
-        for( Entry<GuitarString, OctavatedNote> stringTuning 
+        for( Entry<GuitarString, NoteAndOctave> stringTuning 
                 : tuning.getStringNotes().entrySet())
         {
-            OctavatedNote stringTuningNote = stringTuning.getValue();
+            NoteAndOctave stringTuningNote = stringTuning.getValue();
             int stringNumber = stringTuning.getKey().getPosition();
             if(stringNumberToFretNumberToNote.get(stringNumber) == null) {
                 stringNumberToFretNumberToNote.put(stringNumber, new HashMap<>());
             }
-            Map<Integer, OctavatedNote> fretNumberToNote = stringNumberToFretNumberToNote.get(stringNumber);
+            Map<Integer, NoteAndOctave> fretNumberToNote = stringNumberToFretNumberToNote.get(stringNumber);
             for( int currentFret  = lowestFretToScan; currentFret < highestFretToScan ; currentFret++ ) {
-                OctavatedNote currentNote = stringTuningNote.up(currentFret);
+                NoteAndOctave currentNote = stringTuningNote.up(currentFret);
                 fretNumberToNote.put(currentFret, currentNote);
             }
         }
@@ -319,7 +331,7 @@ public class ChordVoicingGenerator {
             List<FretAction> possibleFretActions,
             Tuning tuning,
             List<Predicate<ChordVoicing>> filters,
-            Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {
+            Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {
         
         return iterateFrets(possibleFretActions, tuning, 0, new ArrayList<>(), filters, scaleToMapOfRootsToNotesOfScale);
     }
@@ -330,7 +342,7 @@ public class ChordVoicingGenerator {
             int currentString, 
             List<FretAction> previousIterations,
             List<Predicate<ChordVoicing>> filters,
-            Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {
+            Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {
         
         Set<ChordVoicing> voicingsConstructed = new HashSet<>();
         

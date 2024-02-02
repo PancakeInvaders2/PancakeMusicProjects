@@ -14,7 +14,7 @@ import com.google.common.collect.Sets;
 import lombok.Data;
 
 @Data
-public class SixHoleWhistle {
+public class SevenHoleWhistle6Front1Flat6LowerBackThumb {
 
     private final Note baseNote;
     
@@ -22,22 +22,10 @@ public class SixHoleWhistle {
     private Set<NoteAndFingering> crossFingeredNotes = null;
     private Set<NoteAndFingering> allPossibleNotes = null;
     
-    public Set<NoteAndFingering> getCrossFingeredNotes(){
-        if(crossFingeredNotes == null) {
-            Set<NoteAndFingering> notes = new HashSet<>();
-            for( WhistleFingering crossFingering : WhistleFingerings.sixHolesCrossFingerings ) {
-                notes.add( new NoteAndFingering(baseNote.up(crossFingering.getSemitonesFromRoot()), 
-                                                crossFingering));
-            }
-            crossFingeredNotes = notes;
-        }
-        return crossFingeredNotes;
-    }
-    
     public Set<NoteAndFingering> getNaturalNotes(){
         if(naturalNotes == null) {
             Set<NoteAndFingering> notes = new HashSet<>();
-            for( WhistleFingering crossFingering : WhistleFingerings.naturalSixHolesFingerings ) {
+            for( WhistleFingering crossFingering : WhistleFingerings.naturalFingeringsWithLowerBackThumbHole ) {
                 notes.add( new NoteAndFingering(baseNote.up(crossFingering.getSemitonesFromRoot()), 
                                                 crossFingering));
             }
@@ -46,9 +34,23 @@ public class SixHoleWhistle {
         return naturalNotes;
     }
     
+    public Set<NoteAndFingering> getCrossFingeredNotes(){
+        if(crossFingeredNotes == null) {
+            Set<NoteAndFingering> notes = new HashSet<>();
+            for( WhistleFingering crossFingering : WhistleFingerings.crossFingeringsWithLowerBackFlat6ThumbHole ) {
+                notes.add( new NoteAndFingering(baseNote.up(crossFingering.getSemitonesFromRoot()), 
+                                                crossFingering));
+            }
+            crossFingeredNotes = notes;
+        }
+        return crossFingeredNotes;
+    }
+    
+
+    
     public Set<NoteAndFingering> getAllPossibleNotesWithFingerings(){
         if(allPossibleNotes == null) {
-            allPossibleNotes = Sets.union(getNaturalNotes(), getCrossFingeredNotes());
+            allPossibleNotes = Sets.union(getNaturalNotes() , getCrossFingeredNotes());
         }
         return allPossibleNotes;
     }
@@ -59,20 +61,6 @@ public class SixHoleWhistle {
                .map(noteAndFingering -> noteAndFingering.getNote())
                .collect(Collectors.toSet());
     }
-
-    
-//    public boolean requiresCrossFingering(Note note) {
-//        return getCrossFingeredNotes().contains(note);
-//    }
-//    
-//    public boolean requiresCrossFingering(List<Note> scaleNotes) {
-//        for( Note scaleNote : scaleNotes ) {
-//            if( requiresCrossFingering(scaleNote) ) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
     
     public List<NoteAndFingering> getNeededCrossFingerings(List<Note> scaleNotes){
         return getCrossFingeredNotes()

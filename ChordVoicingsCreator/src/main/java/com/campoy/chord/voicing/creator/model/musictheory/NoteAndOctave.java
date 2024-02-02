@@ -3,22 +3,22 @@ package com.campoy.chord.voicing.creator.model.musictheory;
 import lombok.Data;
 
 @Data
-public class OctavatedNote {
+public class NoteAndOctave {
 
     private final Note note;
     
     private final int octave;
     
-    public static OctavatedNote A_440 = new OctavatedNote(Note.A, 4);
+    public static NoteAndOctave A_440 = new NoteAndOctave(Note.A, 4);
     
 //    @Override
 //    public boolean equals(Object obj) {
 //        
-//        if( !( obj instanceof OctavatedNote) ) {
+//        if( !( obj instanceof NoteAndOctave) ) {
 //            return false;
 //        }
 //        
-//        OctavatedNote objOctavatedNote = (OctavatedNote)obj;
+//        NoteAndOctave objOctavatedNote = (NoteAndOctave)obj;
 //        boolean equalNote = this.getNote() == objOctavatedNote.getNote();
 //        boolean equalOctave = this.getOctave() == objOctavatedNote.getOctave();
 //        
@@ -31,7 +31,7 @@ public class OctavatedNote {
 //    }
     
 
-    public OctavatedNote up(int semitones) {
+    public NoteAndOctave up(int semitones) {
         
         int baseNoteOctave = this.getOctave();
         Note baseNoteNote = this.getNote();
@@ -46,11 +46,11 @@ public class OctavatedNote {
         
         Note newNote = Note.noteBySemitonesFromA(newNoteSemitonesFromA);
         
-        return new OctavatedNote(newNote, newNoteOctave);
+        return new NoteAndOctave(newNote, newNoteOctave);
         
     }
     
-    public OctavatedNote down(int semitones) {
+    public NoteAndOctave down(int semitones) {
         
         int baseNoteOctave = this.getOctave();
         Note baseNoteNote = this.getNote();
@@ -65,7 +65,7 @@ public class OctavatedNote {
         
         Note newNote = Note.noteBySemitonesFromA(newNoteSemitonesFromA);
         
-        return new OctavatedNote(newNote, newNoteOctave);
+        return new NoteAndOctave(newNote, newNoteOctave);
         
     }
     
@@ -78,11 +78,11 @@ public class OctavatedNote {
         return note.getSemitonesFromA() + octave * 12;
     }    
     
-    public boolean isHigherThan(OctavatedNote other) {
+    public boolean isHigherThan(NoteAndOctave other) {
         return getSemitonesFromA0() > other.getSemitonesFromA0();        
     }
     
-    public boolean isLowerThan(OctavatedNote other) {
+    public boolean isLowerThan(NoteAndOctave other) {
         return getSemitonesFromA0() < other.getSemitonesFromA0();        
     }
     

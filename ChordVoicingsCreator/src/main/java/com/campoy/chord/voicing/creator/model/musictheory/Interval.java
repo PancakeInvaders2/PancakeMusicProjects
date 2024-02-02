@@ -35,7 +35,7 @@ public enum Interval {
 	
 	private int semitones;
 	private String name;
-	private String scaleRepresentation;
+	private String keyRepresentation;
 	
 	boolean isThird;
 	boolean isFifth;
@@ -46,13 +46,13 @@ public enum Interval {
 			boolean isThird, 
 			boolean isFifth, 
 			int orderingPriority,
-			String scaleRepresentation) {
+			String keyRepresentation) {
 		this.semitones = semitones;
 		this.name = name;
 		this.isThird = isThird;
 		this.isFifth = isFifth;
 		this.orderingPriority = orderingPriority;
-		this.scaleRepresentation = scaleRepresentation;
+		this.keyRepresentation = keyRepresentation;
 	}
 	
 	public String getName(List<Interval> intervals) {
@@ -145,8 +145,8 @@ public enum Interval {
 		return orderingPriority;
 	}
 	
-	public String getScaleRepresentation() {
-	    return scaleRepresentation;
+	public String getKeyRepresentation() {
+	    return keyRepresentation;
     }
 	
 }

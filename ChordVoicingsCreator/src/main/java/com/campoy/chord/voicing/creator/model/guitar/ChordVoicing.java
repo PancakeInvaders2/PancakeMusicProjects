@@ -12,8 +12,8 @@ import java.util.StringJoiner;
 import com.campoy.chord.voicing.creator.model.musictheory.Chord;
 import com.campoy.chord.voicing.creator.model.musictheory.Interval;
 import com.campoy.chord.voicing.creator.model.musictheory.Note;
-import com.campoy.chord.voicing.creator.model.musictheory.OctavatedNote;
-import com.campoy.chord.voicing.creator.model.musictheory.Scale;
+import com.campoy.chord.voicing.creator.model.musictheory.NoteAndOctave;
+import com.campoy.chord.voicing.creator.model.musictheory.Key;
 import com.campoy.chord.voicing.creator.util.ChordService;
 
 import java.util.Map.Entry;
@@ -103,11 +103,11 @@ public class ChordVoicing {
         return result;
     }
     
-    public void postProcessing(Tuning tuning, Map<Scale, Map<Note, List<Note>>> scales){
+    public void postProcessing(Tuning tuning, Map<Key, Map<Note, List<Note>>> scales){
         
         Chord representedChordBeingCreated = new Chord();
         
-        Set<OctavatedNote> notesPlaying = new HashSet<>();
+        Set<NoteAndOctave> notesPlaying = new HashSet<>();
         boolean duplicateOctavatedNotesPlaying = false;
         
         for( Entry<GuitarString, FretAction> frettingEntry : getFrettings().entrySet() ) {
@@ -115,12 +115,12 @@ public class ChordVoicing {
             GuitarString guitarString = frettingEntry.getKey();
             FretAction fretAction = frettingEntry.getValue();
             
-            OctavatedNote stringBaseNote = tuning.getStringNotes().get(guitarString);
+            NoteAndOctave stringBaseNote = tuning.getStringNotes().get(guitarString);
             
             Integer fretSounding = fretAction.getFretSounding();
             if(fretSounding != null) {
                 
-                OctavatedNote stringNoteSounding;
+                NoteAndOctave stringNoteSounding;
                 if(fretSounding == 0) {
                     stringNoteSounding = stringBaseNote;
                 }
@@ -179,17 +179,17 @@ public class ChordVoicing {
                 sj.add(fretAction.toString());
             }
             else {
-            	OctavatedNote tuningNote = lastTuningUsed.getStringNotes().get(new GuitarString(i));
-            	OctavatedNote noteSounding = tuningNote.up(fretSounding);
+            	NoteAndOctave tuningNote = lastTuningUsed.getStringNotes().get(new GuitarString(i));
+            	NoteAndOctave noteSounding = tuningNote.up(fretSounding);
                 sj.add(noteSounding.toString());
             }
         }
         return sj.toString();
     }
     
-    private Integer getFirstOccurence(List<OctavatedNote> orderedNotes, Note note){
+    private Integer getFirstOccurence(List<NoteAndOctave> orderedNotes, Note note){
         int i = 0;
-        for(OctavatedNote orderedNote : orderedNotes) {
+        for(NoteAndOctave orderedNote : orderedNotes) {
             if(orderedNote.getNote().equals(note)) {
                 return i;
             }
@@ -199,10 +199,10 @@ public class ChordVoicing {
         return null;
     }
     
-    public List<String> fullRepresentations(Tuning tuning) {
+    public List<String> fullRepresentations(Tuning tuning, boolean hideChordVoicingsThatDoNotHaveAThirdOrAFifth) {
     	List<String> result = new ArrayList<>();
 
-        List<OctavatedNote> orderedNotes = orderNotes(tuning);
+        List<NoteAndOctave> orderedNotes = orderNotes(tuning);
         
         List<Entry<Note, List<Interval>>> listOfEntries = new ArrayList<>(
                 getIntervalsFromRoots(tuning).entrySet());
@@ -216,7 +216,9 @@ public class ChordVoicing {
     		
     		Note root = entry.getKey();
             List<Interval> intervals = entry.getValue();
-			if(intervals .size() > 1) {
+			if(intervals .size() > 1
+			        && ( !hideChordVoicingsThatDoNotHaveAThirdOrAFifth 
+			                || hasAThirdOrAFifth(intervals)) ) {
                 StringJoiner sj = new StringJoiner(" ");
                 for(Interval interval : intervals) {
                 	sj.add(interval.getName(intervals));
@@ -229,16 +231,48 @@ public class ChordVoicing {
     	return result;
     	
     }
+    
+    boolean hasAThirdOrAFifth(List<Interval> intervals){
+        return intervals.contains(Interval.MIN3)
+                || intervals.contains(Interval.MAJ3)
+                || intervals.contains(Interval.PERF_FIFTH);
+    }
+    
+    public boolean doAnyOfTheRepresentationsHaveAThirdOrAFifth(Tuning tuning) {
 
-    private List<OctavatedNote> orderNotes(Tuning tuning) {
-        List<OctavatedNote> orderedNotes = new ArrayList<>();
+        List<NoteAndOctave> orderedNotes = orderNotes(tuning);
+        
+        List<Entry<Note, List<Interval>>> listOfEntries = new ArrayList<>(
+                getIntervalsFromRoots(tuning).entrySet());
+        
+        Collections.sort(listOfEntries, (entry1, entry2) -> {
+            return getFirstOccurence(orderedNotes, entry1.getKey())
+                    - getFirstOccurence(orderedNotes, entry2.getKey());
+        });
+               
+        for( Entry<Note, List<Interval>> entry : listOfEntries) {
+            
+            Note root = entry.getKey();
+            List<Interval> intervals = entry.getValue();
+            if ( hasAThirdOrAFifth(intervals) ) {
+                return true;
+            }
+        }
+        
+        return false;
+        
+    }
+    
+
+    private List<NoteAndOctave> orderNotes(Tuning tuning) {
+        List<NoteAndOctave> orderedNotes = new ArrayList<>();
         for(Entry<GuitarString, FretAction> frettingEntry : frettings.entrySet()) {
             
             FretAction fretting = frettingEntry.getValue();
             
             Integer fretSounding = fretting.getFretSounding();
             if(fretting.getFretSounding() != null) {
-                OctavatedNote tuningBaseNote = 
+                NoteAndOctave tuningBaseNote = 
                         tuning.getStringNotes().get(frettingEntry.getKey());
                 orderedNotes.add(tuningBaseNote.up(fretSounding));
             }
@@ -257,7 +291,7 @@ public class ChordVoicing {
             
             Integer fretSounding = fretting.getFretSounding();
             if(fretting.getFretSounding() != null) {
-                OctavatedNote tuningBaseNote = 
+                NoteAndOctave tuningBaseNote = 
                         tuning.getStringNotes().get(frettingEntry.getKey());
                 sj.add("" + tuningBaseNote.up(fretSounding));
             }
@@ -276,9 +310,9 @@ public class ChordVoicing {
             
             Integer fretSounding = fretting.getFretSounding();
             if(fretting.getFretSounding() != null) {
-                OctavatedNote tuningBaseNote = 
+                NoteAndOctave tuningBaseNote = 
                         lastTuningUsed.getStringNotes().get(frettingEntry.getKey());
-                OctavatedNote voice = tuningBaseNote.up(fretSounding);
+                NoteAndOctave voice = tuningBaseNote.up(fretSounding);
                 semitonesFromA0List.add(voice.getSemitonesFromA0());
             }
         }
@@ -309,9 +343,9 @@ public class ChordVoicing {
             
             Integer fretSounding = fretting.getFretSounding();
             if(fretting.getFretSounding() != null) {
-                OctavatedNote tuningBaseNote = 
+                NoteAndOctave tuningBaseNote = 
                         tuning.getStringNotes().get(frettingEntry.getKey());
-                OctavatedNote octavatedNote = tuningBaseNote.up(fretSounding);
+                NoteAndOctave octavatedNote = tuningBaseNote.up(fretSounding);
                 
                 if(! notes.contains(octavatedNote.getNote())) {
                 	notes.add(octavatedNote.getNote());
@@ -366,14 +400,14 @@ public class ChordVoicing {
 	}
 
     public void computeCompatibleWithAnyOfTheseScales(
-            Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {
+            Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {
         
         Chord voicingChord = getRepresentedChord();
 
-        for(Entry<Scale, Map<Note, List<Note>>> 
+        for(Entry<Key, Map<Note, List<Note>>> 
             scaleMapOfRootsToNotesOfScaleEntry : scaleToMapOfRootsToNotesOfScale.entrySet()) {
             
-            Scale scale = scaleMapOfRootsToNotesOfScaleEntry.getKey();
+            Key scale = scaleMapOfRootsToNotesOfScaleEntry.getKey();
             Map<Note, List<Note>> mapOfRootsToNotesOfScale = scaleMapOfRootsToNotesOfScaleEntry.getValue();
             
             for(Entry<Note, List<Note>> rootToNotesOfScaleEntry 
@@ -398,12 +432,12 @@ public class ChordVoicing {
     }
     
     public boolean isCompatibleWithAnyOfTheseScales(
-            Map<Scale, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {            
+            Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {            
         
         boolean result = false;
         
         for( ScaleAndRoot compatibleScaleAndRoot : compatibleScalesAndRoots) {
-            Scale scale = compatibleScaleAndRoot.getScale();
+            Key scale = compatibleScaleAndRoot.getScale();
             
             if(scaleToMapOfRootsToNotesOfScale.containsKey(scale)) {
                 result = true;
@@ -422,15 +456,15 @@ public class ChordVoicing {
     	return hasSeveralTimesTheSameNoteOnTheSameOctave;
     }
     
-    public OctavatedNote getHighestNote(Tuning tuning){
-        OctavatedNote highestNote = null;
+    public NoteAndOctave getHighestNote(Tuning tuning){
+        NoteAndOctave highestNote = null;
         for(Entry<GuitarString, FretAction> frettingEntry : frettings.entrySet()) {
             FretAction fretting = frettingEntry.getValue();
             Integer fretSounding = fretting.getFretSounding();
             if(fretting.getFretSounding() != null) {
-                OctavatedNote tuningBaseNote = 
+                NoteAndOctave tuningBaseNote = 
                         tuning.getStringNotes().get(frettingEntry.getKey());
-                 OctavatedNote note = tuningBaseNote.up(fretSounding);
+                 NoteAndOctave note = tuningBaseNote.up(fretSounding);
                  
                  if( highestNote == null
                          || note.isHigherThan(highestNote) ) {
@@ -441,15 +475,15 @@ public class ChordVoicing {
         return highestNote;
     }
     
-    public OctavatedNote getLowestNote(Tuning tuning){
-        OctavatedNote lowestNote = null;
+    public NoteAndOctave getLowestNote(Tuning tuning){
+        NoteAndOctave lowestNote = null;
         for(Entry<GuitarString, FretAction> frettingEntry : frettings.entrySet()) {
             FretAction fretting = frettingEntry.getValue();
             Integer fretSounding = fretting.getFretSounding();
             if(fretting.getFretSounding() != null) {
-                OctavatedNote tuningBaseNote = 
+                NoteAndOctave tuningBaseNote = 
                         tuning.getStringNotes().get(frettingEntry.getKey());
-                 OctavatedNote note = tuningBaseNote.up(fretSounding);
+                 NoteAndOctave note = tuningBaseNote.up(fretSounding);
                  
                  if( lowestNote == null
                          || note.isLowerThan(lowestNote) ) {
