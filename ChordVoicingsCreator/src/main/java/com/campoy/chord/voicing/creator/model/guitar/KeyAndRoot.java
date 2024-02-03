@@ -6,7 +6,7 @@ import com.campoy.chord.voicing.creator.model.musictheory.Key;
 import lombok.Data;
 
 @Data
-public class ScaleAndRoot {
-    private final Key scale;
+public class KeyAndRoot {
+    private final Key key;
     private final Note root;
 }

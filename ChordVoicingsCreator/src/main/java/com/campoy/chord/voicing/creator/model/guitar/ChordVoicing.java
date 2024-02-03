@@ -26,7 +26,7 @@ public class ChordVoicing {
     private Tuning lastTuningUsed;
     private boolean hasSeveralTimesTheSameNoteOnTheSameOctave = false;
     
-    List<ScaleAndRoot> compatibleScalesAndRoots = new ArrayList<>();
+    List<KeyAndRoot> compatibleKeysAndRoots = new ArrayList<>();
     
     int lowestFretPlaying = Integer.MAX_VALUE;
     
@@ -103,7 +103,7 @@ public class ChordVoicing {
         return result;
     }
     
-    public void postProcessing(Tuning tuning, Map<Key, Map<Note, List<Note>>> scales){
+    public void postProcessing(Tuning tuning, Map<Key, Map<Note, List<Note>>> keys){
         
         Chord representedChordBeingCreated = new Chord();
         
@@ -150,7 +150,7 @@ public class ChordVoicing {
                 
         this.lastTuningUsed = tuning;
         
-        computeCompatibleWithAnyOfTheseScales(scales);
+        computeCompatibleWithAnyOfTheseKeys(keys);
         
     }
     
@@ -399,47 +399,47 @@ public class ChordVoicing {
 		return lowestFretPlaying;
 	}
 
-    public void computeCompatibleWithAnyOfTheseScales(
-            Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {
+    public void computeCompatibleWithAnyOfTheseKeys(
+            Map<Key, Map<Note, List<Note>>> keyToMapOfRootsToNotesOfKey) {
         
         Chord voicingChord = getRepresentedChord();
 
         for(Entry<Key, Map<Note, List<Note>>> 
-            scaleMapOfRootsToNotesOfScaleEntry : scaleToMapOfRootsToNotesOfScale.entrySet()) {
+            keyMapOfRootsToNotesOfKeyEntry : keyToMapOfRootsToNotesOfKey.entrySet()) {
             
-            Key scale = scaleMapOfRootsToNotesOfScaleEntry.getKey();
-            Map<Note, List<Note>> mapOfRootsToNotesOfScale = scaleMapOfRootsToNotesOfScaleEntry.getValue();
+            Key key = keyMapOfRootsToNotesOfKeyEntry.getKey();
+            Map<Note, List<Note>> mapOfRootsToNotesOfKey = keyMapOfRootsToNotesOfKeyEntry.getValue();
             
-            for(Entry<Note, List<Note>> rootToNotesOfScaleEntry 
-                    : mapOfRootsToNotesOfScale.entrySet()) {
+            for(Entry<Note, List<Note>> rootToNotesOfKeyEntry 
+                    : mapOfRootsToNotesOfKey.entrySet()) {
                 
                 boolean voicingMatches = true;
                 
-                Note root = rootToNotesOfScaleEntry.getKey();
-                List<Note> notesOfScale = rootToNotesOfScaleEntry.getValue();
+                Note root = rootToNotesOfKeyEntry.getKey();
+                List<Note> notesOfKey = rootToNotesOfKeyEntry.getValue();
                 
                 for( Note voicingNote : voicingChord.getNotes()) {
                     
-                    voicingMatches &= notesOfScale.contains(voicingNote);
+                    voicingMatches &= notesOfKey.contains(voicingNote);
                 }
                 
                 if(voicingMatches == true) {
                     
-                    compatibleScalesAndRoots.add(new ScaleAndRoot(scale, root));
+                    compatibleKeysAndRoots.add(new KeyAndRoot(key, root));
                 }
             }
         }
     }
     
-    public boolean isCompatibleWithAnyOfTheseScales(
-            Map<Key, Map<Note, List<Note>>> scaleToMapOfRootsToNotesOfScale) {            
+    public boolean isCompatibleWithAnyOfTheseKeys(
+            Map<Key, Map<Note, List<Note>>> keyToMapOfRootsToNotesOfKey) {            
         
         boolean result = false;
         
-        for( ScaleAndRoot compatibleScaleAndRoot : compatibleScalesAndRoots) {
-            Key scale = compatibleScaleAndRoot.getScale();
+        for( KeyAndRoot compatibleKeyAndRoot : compatibleKeysAndRoots) {
+            Key key = compatibleKeyAndRoot.getKey();
             
-            if(scaleToMapOfRootsToNotesOfScale.containsKey(scale)) {
+            if(keyToMapOfRootsToNotesOfKey.containsKey(key)) {
                 result = true;
                 break;
             };
@@ -448,8 +448,8 @@ public class ChordVoicing {
         return result;
     }
     
-    public List<ScaleAndRoot> getCompatibleScalesAndRoots() {
-        return compatibleScalesAndRoots;
+    public List<KeyAndRoot> getCompatibleKeysAndRoots() {
+        return compatibleKeysAndRoots;
     }
     
     public boolean getHasSeveralTimesTheSameNoteOnTheSameOctave(){
