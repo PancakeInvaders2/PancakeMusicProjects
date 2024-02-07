@@ -195,11 +195,6 @@ modules.xml
 # Node.js
 node_modules/
 
-# Compiled output
-dist/
-*.js
-*.js.map
-
 # Dependency directories
 pids
 logs
