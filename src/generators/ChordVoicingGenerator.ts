@@ -68,7 +68,6 @@ export class ChordVoicingGenerator {
         console.log('ChordVoicingGeneratorConfig.highestNoteAllowed:', highestNoteAllowed);
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsThatDoNotHaveAThirdOrAFifth:', hideChordVoicingsThatDoNotHaveAThirdOrAFifth);
 
-
         console.log('ChordVoicingGeneratorConfig.hideSusChordVoicings:', hideSusChordVoicings);
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsWithb5:', hideChordVoicingsWithb5);
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsWithsharp5:', hideChordVoicingsWithsharp5);
@@ -80,17 +79,6 @@ export class ChordVoicingGenerator {
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsWithAdd11:', hideChordVoicingsWithAdd11);
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsWithb13:', hideChordVoicingsWithb13);
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsWithAdd13:', hideChordVoicingsWithAdd13);
-
-        hideChordVoicingsWithb5
-        hideChordVoicingsWithsharp5
-        hideChordVoicingsWithb7
-        hideChordVoicingsWithAdd7
-        hideChordVoicingsWithb9
-        hideChordVoicingsWithAdd9
-        hideChordVoicingsWithb11
-        hideChordVoicingsWithAdd11
-        hideChordVoicingsWithb13
-        hideChordVoicingsWithAdd13
 
         console.log('___________________');
 
@@ -137,27 +125,6 @@ export class ChordVoicingGenerator {
 
         const filters: ((voicing: ChordVoicing) => boolean)[] = [
             (voicing) => {
-                
-                if( voicing.smallestDistanceBetweenVoices() >= minimumSemitonesBetweenNotesOfTheVoicing
-                    && ChordVoicingGenerator.arrayContainsFragment(voicing.fullRepresentations(
-                    tuning,
-                        hideChordVoicingsThatDoNotHaveAThirdOrAFifth,
-                        hideSusChordVoicings,
-                        hideChordVoicingsWithNo5th,
-                        hideChordVoicingsWithb5,
-                        hideChordVoicingsWithsharp5,
-                        hideChordVoicingsWithb7,
-                        hideChordVoicingsWithAdd7,
-                        hideChordVoicingsWithb9,
-                        hideChordVoicingsWithAdd9,
-                        hideChordVoicingsWithb11,
-                        hideChordVoicingsWithAdd11,
-                        hideChordVoicingsWithb13,
-                        hideChordVoicingsWithAdd13
-                ), "minor major")){
-                    console.log("major minor voicing.smallestDistanceBetweenVoices() : " + voicing.smallestDistanceBetweenVoices());
-                }
-                
                 return voicing.smallestDistanceBetweenVoices() >= minimumSemitonesBetweenNotesOfTheVoicing
             },
             (voicing) => voicing.isCompatibleWithAnyOfTheseKeys(keyToMapOfRootsToNotesOfKey),

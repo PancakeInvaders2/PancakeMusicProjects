@@ -107,8 +107,8 @@ public class ChordVoicingGenerator {
         });
         filters.add(voicing -> {
         	
-        	return forbidTheSameNoteOnTheSameOctaveOnDifferentStrings 
-        			&& !voicing.getHasSeveralTimesTheSameNoteOnTheSameOctave();
+        	return !forbidTheSameNoteOnTheSameOctaveOnDifferentStrings 
+        			|| !voicing.getHasSeveralTimesTheSameNoteOnTheSameOctave();
 
         });
         filters.add(voicing -> {

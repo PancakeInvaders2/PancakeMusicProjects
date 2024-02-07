@@ -242,20 +242,6 @@ window.generateVoicings  = function () {
     const hideChordVoicingsWithb13 : boolean = hideChordVoicingsWithb13Input.checked;   
     const hideChordVoicingsWithAdd13 : boolean = hideChordVoicingsWithAdd13Input.checked;   
 
-    console.log("hideSusChordVoicings: " + hideSusChordVoicings );
-    console.log("hideChordVoicingsWithno5th: " + hideChordVoicingsWithno5th );
-    console.log("hideChordVoicingsWithb5: " + hideChordVoicingsWithb5 );
-    console.log("hideChordVoicingsWithsharp5: " + hideChordVoicingsWithsharp5 );
-    console.log("hideChordVoicingsWithb7: " + hideChordVoicingsWithb7 );
-    console.log("hideChordVoicingsWithAdd7: " + hideChordVoicingsWithAdd7 );
-    console.log("hideChordVoicingsWithb9: " + hideChordVoicingsWithb9 );
-    console.log("hideChordVoicingsWithAdd9: " + hideChordVoicingsWithAdd9 );
-    console.log("hideChordVoicingsWithb11: " + hideChordVoicingsWithb11 );
-    console.log("hideChordVoicingsWithAdd11: " + hideChordVoicingsWithAdd11 );
-    console.log("hideChordVoicingsWithb13: " + hideChordVoicingsWithb13 );
-    console.log("hideChordVoicingsWithAdd13: " + hideChordVoicingsWithAdd13 );
-
-
     ChordVoicingGenerator.generateAndDownloadChordVoicings(
         tuning,
         fretSpan,
