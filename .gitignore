@@ -192,4 +192,33 @@ modules.xml
 .idea/sonarlint
 /com/
 
+# Node.js
+node_modules/
+
+# Compiled output
+dist/
+*.js
+*.js.map
+
+# Dependency directories
+pids
+logs
+yarn-error.log
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+
+# OS directories
+.DS_Store
+Thumbs.db
+
+package-lock.json
+
 Voices.txt
+

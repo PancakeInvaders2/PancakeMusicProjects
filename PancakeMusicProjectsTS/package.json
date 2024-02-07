@@ -1,0 +1,22 @@
+{
+  "name": "pancake-music-projects",
+  "version": "1.0.0",
+  "description": "Generators for music related things",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  },
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=14.17.0"
+  },
+  "dependencies": {
+    "data-structure-typed": "^1.52.0",
+    "hashmap.js": "^1.1.0",
+    "jshashtable": "^0.1.0",
+    "tailwindcss": "^3.4.1"
+  }
+}

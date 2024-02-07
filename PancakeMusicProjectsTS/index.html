@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chord Voicing Generator</title>
+
+    <!-- Link your compiled JavaScript/TypeScript files from the 'dist' folder -->
+    <!-- <script src='./node_modules/data-structure-typed/dist/umd/data-structure-typed.js'></script> -->
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet">
+
+    <!-- Add other script files if needed -->
+
+    <script type="module" src='./dist/index.js'></script>
+
+</head>
+
+<body class="min-h-screen bg-gray-700 text-center">
+
+
+
+    <h2 class="text-3xl font-bold mb-6 text-white">Chord Voicing Generator</h2>
+    <form id="chordVoicingGeneratorConfigForm" class="space-y-1">
+
+        <!-- Generate Chord Voicings Button -->
+        <button type="button" onclick="generateVoicings()" class="btn btn-primary btn-lg mb-3">Generate and download
+            chord voicings</button>
+
+        <!-- Select Tuning -->
+        <div class="selectform-control">
+            <label for="tuning" class="selectlabel text-white">Select Tuning:</label>
+            <select id="tuning" name="tuning" class="select select-bordered w-full max-w-xs">
+            </select>
+        </div>
+
+        <div class="join join-vertical">
+
+            <div class="join">
+
+                <div class="form-control ml-2 mr-2">
+
+                    <!-- Select Allowed Key Roots -->
+                    <label for="allowedKeyRoots" class="selectlabel text-white">Allowed key roots:</label>
+                    <select id="allowedKeyRoots" name="allowedKeyRoots"
+                        class="multipleselect multipleselect-lg max-w-xs" multiple>
+                    </select>
+                </div>
+                <div class="form-control ml-2 mr-2">
+                    <!-- Searched Keys -->
+                    <label class="selectlabel text-white" for="searchedKeys">Searched keys:</label>
+                    <select id="searchedKeys" name="searchedKeys" class="checkbselect checkbselect-bordered multipleselect multipleselect-lg mb-4"
+                        multiple>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="flex justify-center">
+
+            <div class="text-right">
+
+                <div class="join">
+
+                    <div class="numberform-control ml-2 mr-2">
+                        <!-- First Fret To Scan -->
+                        <label for="firstFretToScan" class="numberlabel text-white">First fret to scan:</label>
+                        <input class="numberinput-lg max-w-xs" type="number" id="firstFretToScan" name="firstFretToScan"
+                            value="1" min="1" max="24" step="1" oninput="restrictToInteger(this)">
+                    </div>
+                    <div class="numberform-control ml-2">
+                        <!-- Last Fret To Scan -->
+                        <label for="lastFretToScan" class="numberlabel text-white">Last fret to scan:</label>
+                        <input class="numberinput-lg max-w-xs" type="number" id="lastFretToScan" name="lastFretToScan"
+                            value="24" min="1" max="24" step="1" oninput="restrictToInteger(this)">
+                    </div>
+                </div>
+
+                <div class="numberform-control mt-2">
+                    <!-- Fret Span -->
+                    <label for="fretSpan" class="numberlabel text-white">Voicing maximum fret span:</label>
+                    <input class="numberinput-lg max-w-xs" type="number" id="fretSpan" name="fretSpan" value="3" min="0"
+                        max="12" step="1" oninput="restrictToInteger(this)">
+                </div>
+
+                <div class="numberform-control mt-1">
+                    <!-- Minimum Semitones Between Notes Of The Voicing -->
+                    <label class="numberlabel text-white" for="minimumSemitonesBetweenNotesOfTheVoicing">Minimum
+                        semitones
+                        between
+                        notes of the
+                        voicing:</label>
+                    <input class="numberinput-lg max-w-xs" type="number" id="minimumSemitonesBetweenNotesOfTheVoicing"
+                        name="minimumSemitonesBetweenNotesOfTheVoicing" value="2" min="0" max="36" step="1"
+                        oninput="restrictToInteger(this)">
+                </div>
+
+                <div class="numberform-control mt-1">
+                    <!-- Minimum Number Of Different Notes -->
+                    <label class="numberlabel text-white" for="minNumberOfDifferentNotes">Minimum number of
+                        different
+                        notes:</label>
+                    <input class="numberinput-lg max-w-xs" type="number" id="minNumberOfDifferentNotes"
+                        name="minNumberOfDifferentNotes" value="3" min="0" max="12" step="1"
+                        oninput="restrictToInteger(this)">
+                </div>
+                <div class="numberform-control mt-1">
+                    <!-- Maximum Number Of Different Notes -->
+                    <label class="numberlabel text-white" for="maxNumberOfDifferentNotes">Maximum number of
+                        different
+                        notes:</label>
+                    <input class="numberinput-lg max-w-xs" type="number" id="maxNumberOfDifferentNotes"
+                        name="maxNumberOfDifferentNotes" value="4" min="0" max="12" step="1"
+                        oninput="restrictToInteger(this)">
+                </div>
+                <div class="numberform-control mt-1">
+                    <!-- Must Contain At Least This Many Open Strings -->
+                    <label class="numberlabel text-white" for="mustContainAtLeastThisManyOpenStrings">Must contain
+                        at
+                        least
+                        this
+                        many
+                        open
+                        strings:</label>
+                    <input class="numberinput-lg max-w-xs" type="number" id="mustContainAtLeastThisManyOpenStrings"
+                        name="mustContainAtLeastThisManyOpenStrings" value="0" min="0" max="12" step="1"
+                        oninput="restrictToInteger(this)">
+                </div>
+                <div class="numberform-control mt-1">
+                    <!-- Must Contain At Most This Many Open Strings -->
+                    <label class="numberlabel text-white" for="mustContainAtMostThisManyOpenStrings">Must contain at
+                        least
+                        this
+                        many
+                        open
+                        strings:</label>
+                    <input class="numberinput-lg max-w-xs" type="number" id="mustContainAtMostThisManyOpenStrings"
+                        name="mustContainAtMostThisManyOpenStrings" value="2" min="0" max="12" step="1"
+                        oninput="restrictToInteger(this)">
+                </div>
+                <div class="numberform-control mt-1">
+                    <!-- Minimum Number Of Muted Lowest Strings -->
+                    <label class="numberlabel text-white" for="minimumNumberOfMutedLowestStrings">Minimum number of
+                        muted
+                        lowest
+                        strings:</label>
+                    <input class="numberinput-lg max-w-xs" type="number" id="minimumNumberOfMutedLowestStrings"
+                        name="minimumNumberOfMutedLowestStrings" value="0" min="0" max="12" step="1"
+                        oninput="restrictToInteger(this)">
+                </div>
+                <div class="numberform-control mt-1">
+                    <!-- Minimum Number Of Muted Highest Strings -->
+                    <label class="numberlabel text-white" for="minimumNumberOfMutedHighestStrings">Minimum number of
+                        muted
+                        highest
+                        strings:</label>
+                    <input class="numberinput-lg max-w-xs" type="number" id="minimumNumberOfMutedHighestStrings"
+                        name="minimumNumberOfMutedHighestStrings" value="0" min="0" max="12" step="1"
+                        oninput="restrictToInteger(this)">
+                </div>
+            </div>
+        </div>
+
+        <div class="join">
+
+            <div class="form-control ml-2 mr-2">
+                <!-- Lowest Note Allowed -->
+                <label class="label text-white" id="lowestNoteAllowed">Lowest
+                    note
+                    allowed:</label>
+
+                <div class="join">
+                    <select id="lowestNoteAllowedNote" name="lowestNoteAllowedNote"
+                        class="select select-bordered w-full max-w-xs " aria-labelledby="lowestNoteAllowed">
+                    </select>
+                    <input class="input input-bordered w-full max-w-xs" type="number" id="lowestNoteAllowedOctave"
+                        name="lowestNoteAllowedOctave" value="2" min="1" max="8" step="1"
+                        oninput="restrictToInteger(this)" aria-labelledby="lowestNoteAllowed">
+                </div>
+
+            </div>
+
+
+            <div class="form-control ml-2 mr-2">
+                <!-- Highest Note Allowed -->
+                <label id="highestNoteAllowed" class="label text-white">Highest
+                    note
+                    allowed:</label>
+                <div class="join ">
+
+                    <select id="highestNoteAllowedNote" name="highestNoteAllowedNote"
+                        class="select select-bordered w-full max-w-xs" aria-labelledby="highestNoteAllowed">
+                    </select>
+                    <input class="input input-bordered w-full max-w-xs" type="number" id="highestNoteAllowedOctave"
+                        name="highestNoteAllowedOctave" value="6" min="1" max="8" step="1"
+                        oninput="restrictToInteger(this)" aria-labelledby="highestNoteAllowed">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="">
+
+            <div class="form-control ">
+                <!-- Forbid The Same Note On The Same Octave On Different Strings -->
+                <label class="inline-flex text-white self-center mr-4">
+                    <input class="checkbox checkbox-accent" type="checkbox" checked
+                        id="forbidTheSameNoteOnTheSameOctaveOnDifferentStrings"
+                        name="forbidTheSameNoteOnTheSameOctaveOnDifferentStrings">
+                    <span class="ml-2">Forbid the same note on the same octave on different strings</span>
+                </label>
+            </div>
+
+            <div class="form-control mt-1">
+                <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                <label class="inline-flex text-white self-center mr-20 ml-3 mt-1">
+                    <input class="checkbox checkbox-accent" type="checkbox" checked
+                        id="hideChordVoicingsThatDoNotHaveAThirdOrAFifth"
+                        name="hideChordVoicingsThatDoNotHaveAThirdOrAFifth">
+                    <span class="ml-2">Hide chord voicings that do not have a third or a fifth</span>
+                </label>
+            </div>
+
+            <div class="form-control join-vertical ">
+
+                <div class="join mt-1 self-center">
+
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center mr-5">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked id="hideChordVoicingsWithb5"
+                                name="hideChordVoicingsWithb5">
+                            <span class="ml-2">Hide chord voicings with b5</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center ">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                                id="hideChordVoicingsWithsharp5" name="hideChordVoicingsWithsharp5">
+                            <span class="ml-2">Hide chord voicings with #5</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="join mt-1 self-center">
+
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center ml-4">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked id="hideChordVoicingsWithb7"
+                                name="hideChordVoicingsWithb7">
+                            <span class="ml-2">Hide chord voicings with b7</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center ml-5">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                                id="hideChordVoicingsWithAdd7" name="hideChordVoicingsWithAdd7">
+                            <span class="ml-2">Hide chord voicings with add7</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="join mt-1 self-center">
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center ml-4">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked id="hideChordVoicingsWithb9"
+                                name="hideChordVoicingsWithb9">
+                            <span class="ml-2">Hide chord voicings with b9</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center ml-5">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                                id="hideChordVoicingsWithAdd9" name="hideChordVoicingsWithAdd9">
+                            <span class="ml-2">Hide chord voicings with add9</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="join mt-1 self-center">
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center ml-6">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                                id="hideChordVoicingsWithb11" name="hideChordVoicingsWithb11">
+                            <span class="ml-2">Hide chord voicings with b11</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center ml-3">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                                id="hideChordVoicingsWithAdd11" name="hideChordVoicingsWithAdd11">
+                            <span class="ml-2">Hide chord voicings with add11</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="join mt-1 self-center">
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center ml-6">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                                id="hideChordVoicingsWithb13" name="hideChordVoicingsWithb13">
+                            <span class="ml-2">Hide chord voicings with b13</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center ml-3">
+                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                                id="hideChordVoicingsWithAdd13" name="hideChordVoicingsWithAdd13">
+                            <span class="ml-2">Hide chord voicings with add13</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+
+</body>
+
+</html>
