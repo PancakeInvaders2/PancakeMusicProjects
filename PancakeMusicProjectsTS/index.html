@@ -23,7 +23,7 @@
 
 
 
-    <h2 class="text-3xl font-bold mb-6 text-white">Chord Voicing Generator</h2>
+    <h2 class="text-4xl font-bold mb-5 text-white">Chord Voicing Generator</h2>
     <form id="chordVoicingGeneratorConfigForm" class="space-y-1">
 
         <!-- Generate Chord Voicings Button -->
@@ -52,7 +52,7 @@
                 <div class="form-control ml-2 mr-2">
                     <!-- Searched Keys -->
                     <label class="selectlabel text-white" for="searchedKeys">Searched keys:</label>
-                    <select id="searchedKeys" name="searchedKeys" class="checkbselect checkbselect-bordered multipleselect multipleselect-lg mb-4"
+                    <select id="searchedKeys" name="searchedKeys" class="checkbselect checkbselect-bordered multipleselect multipleselect-lg mb-3"
                         multiple>
                     </select>
                 </div>
@@ -80,7 +80,7 @@
                     </div>
                 </div>
 
-                <div class="numberform-control mt-2">
+                <div class="numberform-control mt-1">
                     <!-- Fret Span -->
                     <label for="fretSpan" class="numberlabel text-white">Voicing maximum fret span:</label>
                     <input class="numberinput-lg max-w-xs" type="number" id="fretSpan" name="fretSpan" value="3" min="0"
@@ -215,13 +215,21 @@
                 </label>
             </div>
 
+            <!-- Master Checkbox -->
+            <div class="form-control mt-1">
+                <label class="inline-flex text-white self-center mr-4">
+                    <input class="checkbox checkbox-accent" type="checkbox" id="masterCheckbox" name="masterCheckbox" checked>
+                    <span class="ml-2">Hide all optional chord voicings</span>
+                </label>
+            </div>
+
             <div class="form-control mt-1">
                 <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
-                <label class="inline-flex text-white self-center mr-20 ml-3 mt-1">
-                    <input class="checkbox checkbox-accent" type="checkbox" checked
+                <label class="inline-flex text-white self-center mr-20 ml-5 mt-1">
+                    <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked
                         id="hideChordVoicingsThatDoNotHaveAThirdOrAFifth"
                         name="hideChordVoicingsThatDoNotHaveAThirdOrAFifth">
-                    <span class="ml-2">Hide chord voicings that do not have a third or a fifth</span>
+                    <span class="ml-2">Hide chord voicings that have neither a third nor a fifth</span>
                 </label>
             </div>
 
@@ -231,8 +239,29 @@
 
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center mr-0 ml-8">
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked id="hideSusChordVoicings"
+                                name="hideSusChordVoicings">
+                            <span class="ml-2">Hide sus chord voicings</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
+                        <label class="inline-flex text-white self-center mr-2 ml-12">
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked
+                                id="hideChordVoicingsWithno5th" name="hideChordVoicingsWithno5th">
+                            <span class="ml-2">Hide chord voicings with no 5th</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="join mt-1 self-center">
+
+                    <div class="form-control mt-1">
+                        <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
                         <label class="inline-flex text-white self-center mr-5">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked id="hideChordVoicingsWithb5"
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked id="hideChordVoicingsWithb5"
                                 name="hideChordVoicingsWithb5">
                             <span class="ml-2">Hide chord voicings with b5</span>
                         </label>
@@ -240,8 +269,8 @@
 
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
-                        <label class="inline-flex text-white self-center ">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                        <label class="inline-flex text-white self-center mr-1">
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked
                                 id="hideChordVoicingsWithsharp5" name="hideChordVoicingsWithsharp5">
                             <span class="ml-2">Hide chord voicings with #5</span>
                         </label>
@@ -252,7 +281,7 @@
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
                         <label class="inline-flex text-white self-center ml-4">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked id="hideChordVoicingsWithb7"
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked id="hideChordVoicingsWithb7"
                                 name="hideChordVoicingsWithb7">
                             <span class="ml-2">Hide chord voicings with b7</span>
                         </label>
@@ -261,7 +290,7 @@
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
                         <label class="inline-flex text-white self-center ml-5">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked
                                 id="hideChordVoicingsWithAdd7" name="hideChordVoicingsWithAdd7">
                             <span class="ml-2">Hide chord voicings with add7</span>
                         </label>
@@ -271,7 +300,7 @@
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
                         <label class="inline-flex text-white self-center ml-4">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked id="hideChordVoicingsWithb9"
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked id="hideChordVoicingsWithb9"
                                 name="hideChordVoicingsWithb9">
                             <span class="ml-2">Hide chord voicings with b9</span>
                         </label>
@@ -280,7 +309,7 @@
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
                         <label class="inline-flex text-white self-center ml-5">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked
                                 id="hideChordVoicingsWithAdd9" name="hideChordVoicingsWithAdd9">
                             <span class="ml-2">Hide chord voicings with add9</span>
                         </label>
@@ -290,7 +319,7 @@
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
                         <label class="inline-flex text-white self-center ml-6">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked
                                 id="hideChordVoicingsWithb11" name="hideChordVoicingsWithb11">
                             <span class="ml-2">Hide chord voicings with b11</span>
                         </label>
@@ -299,7 +328,7 @@
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
                         <label class="inline-flex text-white self-center ml-3">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked
                                 id="hideChordVoicingsWithAdd11" name="hideChordVoicingsWithAdd11">
                             <span class="ml-2">Hide chord voicings with add11</span>
                         </label>
@@ -309,7 +338,7 @@
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
                         <label class="inline-flex text-white self-center ml-6">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked
                                 id="hideChordVoicingsWithb13" name="hideChordVoicingsWithb13">
                             <span class="ml-2">Hide chord voicings with b13</span>
                         </label>
@@ -318,7 +347,7 @@
                     <div class="form-control mt-1">
                         <!-- Hide Chord Voicings That Do Not Have A Third Or A Fifth -->
                         <label class="inline-flex text-white self-center ml-3">
-                            <input class="checkbox checkbox-accent" type="checkbox" checked
+                            <input class="chordCheckbox checkbox checkbox-accent" type="checkbox" checked
                                 id="hideChordVoicingsWithAdd13" name="hideChordVoicingsWithAdd13">
                             <span class="ml-2">Hide chord voicings with add13</span>
                         </label>

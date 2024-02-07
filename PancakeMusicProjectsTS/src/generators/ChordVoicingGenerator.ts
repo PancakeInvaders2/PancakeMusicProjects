@@ -32,6 +32,8 @@ export class ChordVoicingGenerator {
         lowestNoteAllowed: NoteAndOctave,
         highestNoteAllowed: NoteAndOctave,
         hideChordVoicingsThatDoNotHaveAThirdOrAFifth: boolean,
+        hideSusChordVoicings: boolean,
+        hideChordVoicingsWithNo5th: boolean,
         hideChordVoicingsWithb5: boolean,
         hideChordVoicingsWithsharp5: boolean,
         hideChordVoicingsWithb7: boolean,
@@ -66,6 +68,8 @@ export class ChordVoicingGenerator {
         console.log('ChordVoicingGeneratorConfig.highestNoteAllowed:', highestNoteAllowed);
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsThatDoNotHaveAThirdOrAFifth:', hideChordVoicingsThatDoNotHaveAThirdOrAFifth);
 
+
+        console.log('ChordVoicingGeneratorConfig.hideSusChordVoicings:', hideSusChordVoicings);
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsWithb5:', hideChordVoicingsWithb5);
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsWithsharp5:', hideChordVoicingsWithsharp5);
         console.log('ChordVoicingGeneratorConfig.hideChordVoicingsWithb7:', hideChordVoicingsWithb7);
@@ -132,7 +136,30 @@ export class ChordVoicingGenerator {
         );
 
         const filters: ((voicing: ChordVoicing) => boolean)[] = [
-            (voicing) => voicing.smallestDistanceBetweenVoices() >= minimumSemitonesBetweenNotesOfTheVoicing,
+            (voicing) => {
+                
+                if( voicing.smallestDistanceBetweenVoices() >= minimumSemitonesBetweenNotesOfTheVoicing
+                    && ChordVoicingGenerator.arrayContainsFragment(voicing.fullRepresentations(
+                    tuning,
+                        hideChordVoicingsThatDoNotHaveAThirdOrAFifth,
+                        hideSusChordVoicings,
+                        hideChordVoicingsWithNo5th,
+                        hideChordVoicingsWithb5,
+                        hideChordVoicingsWithsharp5,
+                        hideChordVoicingsWithb7,
+                        hideChordVoicingsWithAdd7,
+                        hideChordVoicingsWithb9,
+                        hideChordVoicingsWithAdd9,
+                        hideChordVoicingsWithb11,
+                        hideChordVoicingsWithAdd11,
+                        hideChordVoicingsWithb13,
+                        hideChordVoicingsWithAdd13
+                ), "minor major")){
+                    console.log("major minor voicing.smallestDistanceBetweenVoices() : " + voicing.smallestDistanceBetweenVoices());
+                }
+                
+                return voicing.smallestDistanceBetweenVoices() >= minimumSemitonesBetweenNotesOfTheVoicing
+            },
             (voicing) => voicing.isCompatibleWithAnyOfTheseKeys(keyToMapOfRootsToNotesOfKey),
             (voicing) => voicing.getRepresentedChord()!.getNotes().size <= maxNumberOfDifferentNotes,
             (voicing) => voicing.getRepresentedChord()!.getNotes().size >= minNumberOfDifferentNotes,
@@ -200,6 +227,8 @@ export class ChordVoicingGenerator {
                 targetFile,
                 keyToMapOfRootsToNotesOfKey,
                 hideChordVoicingsThatDoNotHaveAThirdOrAFifth,
+                hideSusChordVoicings,
+                hideChordVoicingsWithNo5th,
                 hideChordVoicingsWithb5,
                 hideChordVoicingsWithsharp5,
                 hideChordVoicingsWithb7,
@@ -216,6 +245,15 @@ export class ChordVoicingGenerator {
         }
 
         console.log('Stream closed');
+    }
+
+    static arrayContainsFragment( array : string[], fragment : string ) : boolean {
+        for( let arrayItem of array ){
+            if(arrayItem.includes(fragment)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private static computeMapOfKeyToMapOfRootsToNotesOfKey(
@@ -261,6 +299,8 @@ export class ChordVoicingGenerator {
         output: PrintStream,
         keyToMapOfRootsToNotesOfKey: Map<Key, Map<Note, Note[]>>,
         hideChordVoicingsThatDoNotHaveAThirdOrAFifth: boolean,
+        hideSusChordVoicings: boolean,
+        hideChordVoicingsWithNo5th: boolean,
         hideChordVoicingsWithb5: boolean,
         hideChordVoicingsWithsharp5: boolean,
         hideChordVoicingsWithb7: boolean,
@@ -301,6 +341,8 @@ export class ChordVoicingGenerator {
                 const fullRepresentations: string[] = voicing
                     .fullRepresentations(tuning,
                         hideChordVoicingsThatDoNotHaveAThirdOrAFifth,
+                        hideSusChordVoicings,
+                        hideChordVoicingsWithNo5th,
                         hideChordVoicingsWithb5,
                         hideChordVoicingsWithsharp5,
                         hideChordVoicingsWithb7,
@@ -346,8 +388,6 @@ export class ChordVoicingGenerator {
         keyToMapOfRootsToNotesOfKey: Map<Key, Map<Note, Note[]>>
     ): Set<ChordVoicing> {
 
-        console.log("in generateVoicings")
-
         const stringNumberToFretNumberToNote: Map<number, Map<number, NoteAndOctave>> = new Map();
         for (const [stringNumber, stringTuningNote] of tuning.getStringNotes()) {
             if (!stringNumberToFretNumberToNote.has(stringNumber)) {
@@ -378,8 +418,6 @@ export class ChordVoicingGenerator {
         filters: ((voicing: ChordVoicing) => boolean)[],
         keyToMapOfRootsToNotesOfKey: Map<Key, Map<Note, Note[]>>
     ): Set<ChordVoicing> {
-
-        console.log('in generateVoicingsFromFretActions');
 
         return this.iterateFrets(
             possibleFretActions,

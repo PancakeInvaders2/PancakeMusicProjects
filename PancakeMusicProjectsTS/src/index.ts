@@ -19,7 +19,7 @@ window.restrictToInteger = function (input: HTMLInputElement): void {
 
 function populateTuning() {
     const tuningSelect = document.getElementById('tuning');
-    const preselectedTuning = Tuning.DROP_D_6_STRING_GUITAR;
+    const preselectedTuning = Tuning.STANDARD_7_STRING_GUITAR;
 
     Tuning.availableTunings.forEach(tuning => {
         const option = document.createElement('option');
@@ -97,12 +97,31 @@ function populateHighestNoteAllowedNote() {
     }
 }
 
+function configureMasterCheckbox() : void {
+        // Get master checkbox
+        const masterCheckbox = document.getElementById('masterCheckbox') as HTMLInputElement;;
+
+        // Get all checkboxes controlled by the master checkbox
+        const chordCheckboxes = document.querySelectorAll('.chordCheckbox') as NodeListOf<HTMLInputElement>;
+
+        // Add event listener to master checkbox
+        masterCheckbox.addEventListener('change', function () {
+            // Loop through all chord checkboxes
+            chordCheckboxes.forEach(function (checkbox) {
+
+                // Set the state of each checkbox to match the state of the master checkbox
+                checkbox.checked = masterCheckbox.checked;
+            });
+        });
+}
+
 window.onload = function() {
     populateTuning();
     populateSearchedKeys();
     populateKeyRoots();
     populateLowestNoteAllowedNote();
     populateHighestNoteAllowedNote();
+    configureMasterCheckbox();
 }; 
 
 function getSelectedKeysRoots() : Note[] {
@@ -197,7 +216,8 @@ window.generateVoicings  = function () {
     const hideChordVoicingsThatDoNotHaveAThirdOrAFifthInput = document.getElementById('hideChordVoicingsThatDoNotHaveAThirdOrAFifth') as HTMLInputElement;
     const hideChordVoicingsThatDoNotHaveAThirdOrAFifth : boolean = hideChordVoicingsThatDoNotHaveAThirdOrAFifthInput.checked;            
 
-
+    const hideSusChordVoicingsInput = document.getElementById('hideSusChordVoicings') as HTMLInputElement;
+    const hideChordVoicingsWithno5thInput = document.getElementById('hideChordVoicingsWithno5th') as HTMLInputElement;
     const hideChordVoicingsWithb5Input = document.getElementById('hideChordVoicingsWithb5') as HTMLInputElement;
     const hideChordVoicingsWithsharp5Input = document.getElementById('hideChordVoicingsWithsharp5') as HTMLInputElement;
     const hideChordVoicingsWithb7Input = document.getElementById('hideChordVoicingsWithb7') as HTMLInputElement;
@@ -209,6 +229,8 @@ window.generateVoicings  = function () {
     const hideChordVoicingsWithb13Input = document.getElementById('hideChordVoicingsWithb13') as HTMLInputElement;
     const hideChordVoicingsWithAdd13Input = document.getElementById('hideChordVoicingsWithAdd13') as HTMLInputElement;
 
+    const hideSusChordVoicings : boolean = hideSusChordVoicingsInput.checked;   
+    const hideChordVoicingsWithno5th : boolean = hideChordVoicingsWithno5thInput.checked;   
     const hideChordVoicingsWithb5 : boolean = hideChordVoicingsWithb5Input.checked;   
     const hideChordVoicingsWithsharp5 : boolean = hideChordVoicingsWithsharp5Input.checked;   
     const hideChordVoicingsWithb7 : boolean = hideChordVoicingsWithb7Input.checked;   
@@ -220,6 +242,8 @@ window.generateVoicings  = function () {
     const hideChordVoicingsWithb13 : boolean = hideChordVoicingsWithb13Input.checked;   
     const hideChordVoicingsWithAdd13 : boolean = hideChordVoicingsWithAdd13Input.checked;   
 
+    console.log("hideSusChordVoicings: " + hideSusChordVoicings );
+    console.log("hideChordVoicingsWithno5th: " + hideChordVoicingsWithno5th );
     console.log("hideChordVoicingsWithb5: " + hideChordVoicingsWithb5 );
     console.log("hideChordVoicingsWithsharp5: " + hideChordVoicingsWithsharp5 );
     console.log("hideChordVoicingsWithb7: " + hideChordVoicingsWithb7 );
@@ -250,6 +274,8 @@ window.generateVoicings  = function () {
         new NoteAndOctave(lowestNoteAllowedNote, lowestNoteAllowedOctave),
         new NoteAndOctave(highestNoteAllowedNote, highestNoteAllowedOctave),
         hideChordVoicingsThatDoNotHaveAThirdOrAFifth,
+        hideSusChordVoicings,
+        hideChordVoicingsWithno5th,
         hideChordVoicingsWithb5,
         hideChordVoicingsWithsharp5,
         hideChordVoicingsWithb7,

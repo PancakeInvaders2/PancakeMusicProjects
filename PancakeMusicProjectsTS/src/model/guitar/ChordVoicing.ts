@@ -165,6 +165,8 @@ class ChordVoicing implements EqualsTrait {
 
   fullRepresentations(tuning: Tuning,
     hideChordVoicingsThatDoNotHaveAThirdOrAFifth: boolean,
+    hideSusChordVoicings: boolean,
+    hideChordVoicingsWithNo5th: boolean,
     hideChordVoicingsWithb5: boolean,
     hideChordVoicingsWithsharp5: boolean,
     hideChordVoicingsWithb7: boolean,
@@ -202,7 +204,9 @@ class ChordVoicing implements EqualsTrait {
         }
 
         const representation = `${root} ${sj.join(' ')}`;
-        if ((!hideChordVoicingsWithb5 || !this.hasFragment(representation, "b5"))
+        if ((!hideSusChordVoicings || !this.hasFragment(representation, "sus"))
+          && (!hideChordVoicingsWithNo5th || !this.hasFragment(representation, "no5th"))
+          && (!hideChordVoicingsWithb5 || !this.hasFragment(representation, "b5"))
           && (!hideChordVoicingsWithsharp5 || !this.hasFragment(representation, "#5"))
           && (!hideChordVoicingsWithb7 || !this.hasFragment(representation, "b7"))
           && (!hideChordVoicingsWithAdd7 || !this.hasFragment(representation, "add7"))
